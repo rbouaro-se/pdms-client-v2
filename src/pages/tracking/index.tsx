@@ -25,8 +25,8 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useParams } from 'react-router-dom'
 
-const GOOGLE_API_KEY = import.meta.env.GOOGLE_API_KEY;
-const GOOGLE_MAP_ID = import.meta.env.GOOGLE_MAP_ID
+const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+const GOOGLE_MAP_ID = import.meta.env.VITE_GOOGLE_MAP_ID
 
 export default function Tracking() {
 
