@@ -17,8 +17,8 @@ interface RouteMapProps {
     destination: Location;
 }
 
-const GOOGLE_API_KEY = import.meta.env.GOOGLE_API_KEY;
-const GOOGLE_MAP_ID = import.meta.env.GOOGLE_MAP_ID;
+const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+const GOOGLE_MAP_ID = import.meta.env.VITE_GOOGLE_MAP_ID;
 
 
 
