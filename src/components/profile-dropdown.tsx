@@ -1,0 +1,106 @@
+import { Link, useNavigate } from 'react-router-dom'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { AppUser } from '@/types/user'
+import { useLogoutMutation } from '@/api/slices/auth'
+
+interface ProfileDropdownProps {
+  user?: AppUser | null
+  logoutRedirectUrl: string
+  profilePageUrl: string
+  settingPageUrl: string
+ 
+}
+
+export function ProfileDropdown({
+  user,
+  ...props
+}: ProfileDropdownProps) {
+
+  const navigate = useNavigate();
+
+
+  // const handleLogout = async () => {
+  //   if (onLogout) {
+  //     try {
+  //       await onLogout();
+  //     } catch (error) {
+  //       console.error("Logout failed:", error);
+
+  //     }
+  //   }
+
+  // }
+
+  const [logout] = useLogoutMutation();
+
+  const handleLogout = async () => {
+    try {
+      await logout({});
+      navigate(props.logoutRedirectUrl, { replace: true });
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
+
+  return (
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
+          <Avatar className='h-8 w-8'>
+            <AvatarImage src='/avatars/01.png' alt='@shadcn' />
+            <AvatarFallback> {user
+              ? (user.type === "system" ? user.firstName : user.name)
+                .split(' ')
+                .map((n) => n[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2)
+              : 'ME'}</AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className='w-56' align='end' forceMount>
+        <DropdownMenuLabel className='font-normal'>
+          <div className='flex flex-col space-y-1'>
+            <p className='text-sm leading-none font-medium'>{ user ? (user.type ==="system" ? user.firstName : user.name.split(" ")[0]):"Unknown" }</p>
+            <p className='text-muted-foreground text-xs leading-none'>
+              {user ? (user.type === "system" ? user.email : user.phoneNumber): "User not available"}
+            </p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem asChild>
+            <Link to={props.profilePageUrl}>
+              Profile
+              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to={props.settingPageUrl}>
+              Settings
+              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleLogout}>
+          Log out
+          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}

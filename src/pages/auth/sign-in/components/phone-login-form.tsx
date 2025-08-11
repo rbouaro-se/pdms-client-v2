@@ -1,0 +1,285 @@
+import { HTMLAttributes, useState } from 'react'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { formatGhanaianPhoneNumber, formatPhoneInput, validateGhanaianPhoneNumber } from '@/utils';
+import React from 'react'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { useInitiatePhoneLoginMutation, useLogoutMutation, usePhoneLoginMutation } from '@/api/slices/auth'
+import { OtpForm } from '../../otp/components/otp-form'
+import { Customer } from '@/types/user'
+import { IAPIError, IResponse } from '@/types'
+import { setUser } from '@/redux/slices/auth'
+import { setFeedback } from '@/redux/slices/notification'
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card'
+import AuthLayout from '../../auth-layout'
+
+type UserAuthFormProps = HTMLAttributes<HTMLFormElement>
+
+const formSchema = z.object({
+    phone: z.string()
+        .min(12, 'Phone number must be at least 12 characters long')
+        .refine(val => validateGhanaianPhoneNumber(val).isValid, {
+            message: 'Please enter a valid Ghanaian phone number'
+        })
+})
+
+const PhoneLoginForm = ({ className, ...props }: UserAuthFormProps) => {
+    const [isLoading, setIsLoading] = useState(false)
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+
+    // Initialize step based on URL parameter
+    const [step, setStep] = useState<"STEP-1" | "STEP-2">(
+        searchParams.get('step') === 'verify' ? "STEP-2" : "STEP-1"
+    );
+
+    const { account } = useAppSelector(state => state.registration);
+    const [phone, setPhone] = useState<string>(account.username || '');
+
+    const [initiatePhoneLogin] = useInitiatePhoneLoginMutation();
+    const [phoneLogin] = usePhoneLoginMutation();
+    const [logout] = useLogoutMutation();
+
+    // Update URL when step changes
+    React.useEffect(() => {
+        const newParams = new URLSearchParams(searchParams);
+        if (step === "STEP-2") {
+            newParams.set('step', 'verify');
+        } else {
+            newParams.delete('step');
+        }
+        navigate(`?${newParams.toString()}`, { replace: true });
+    }, [step, navigate, searchParams]);
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            phone: account.username || ''
+        },
+    })
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rawValue = e.target.value.replace(/\D/g, ''); // Remove all non-digit characters
+        let formattedValue = rawValue;
+
+        // Format as Ghanaian number if starts with 233
+        if (rawValue.startsWith('233')) {
+            formattedValue = formatPhoneInput(rawValue);
+        }
+
+        // Update both form value and local state
+        form.setValue('phone', formattedValue, { shouldValidate: true });
+        setPhone(formattedValue);
+    };
+
+    const handleSubmit = async (code: string) => {
+        try {
+
+            const response: IResponse<Customer> = await phoneLogin({ phoneNumber: phone, otp: code });
+            console.log('Phone login successful:', response);
+
+            if (response.data) {
+                dispatch(setUser({ ...response.data, type: "customer" }));
+                navigate('', { replace: true });
+                navigate('/pages/customer/home', { replace: true });
+            }
+
+            if (response.error) {
+                const errorResponse = response.error as IAPIError;
+                dispatch(setFeedback({
+                    message: `Authentication failed! ${errorResponse.data.message || 'Unknown error'}`,
+                    title: "Authentication",
+                    color: "danger"
+                }))
+            }
+
+        } catch (error) {
+            console.error('Verification failed:', error);
+            // Handle error (show message to user)
+        }
+    };
+
+    const handleResend = async () => {
+        try {
+            initiatePhoneLogin({ phoneNumber: phone })
+                .unwrap()
+                .then(res => {
+                    console.log('Phone login initiated:', res);
+                    dispatch(setFeedback({
+                        message: `Otp resent to ${formatGhanaianPhoneNumber(phone)}`,
+                        title: "Otp Verification",
+                        color: "success"
+                    }))
+                })
+                .catch((error) => {
+                    console.error('Error initiating phone login:', error);
+                    // Handle error (show message to user)
+                });
+        } catch (error) {
+            console.error('Resend failed:', error);
+            // Handle error
+        }
+    };
+
+    const handleLogout = async () => {
+        try {
+            await logout({});
+            navigate('/login', { replace: true });
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
+
+    async function handleContinue(data: z.infer<typeof formSchema>) {
+        setIsLoading(true);
+        try {
+            const validation = validateGhanaianPhoneNumber(data.phone);
+            if (!validation.isValid) {
+                form.setError('phone', { message: validation.error || 'Invalid phone number' });
+                return;
+            }
+
+            const result = await initiatePhoneLogin({ phoneNumber: data.phone }).unwrap();
+            console.log('Phone login initiated:', result);
+            setStep("STEP-2");
+        } catch (error) {
+            console.error('Error initiating phone login:', error);
+            form.setError('phone', {
+                message: 'Failed to initiate login. Please try again.'
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    async function handleReturn() {
+
+    }
+
+    return (
+        <AuthLayout>
+            <Card className='gap-4'>
+                <CardHeader>
+                    <CardTitle className='text-lg tracking-tight'>Login</CardTitle>
+                    <CardDescription>
+                        Enter your phone number continue to log into your account
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {step === 'STEP-1' ? (
+
+                        <Form {...form}>
+                            <form
+                                onSubmit={form.handleSubmit(handleContinue)}
+                                className={cn('grid gap-3', className)}
+                                {...props}
+                            >
+                                <FormField
+                                    control={form.control}
+                                    name="phone"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Phone number</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="tel"
+                                                    placeholder="233551234567"
+                                                    value={field.value}
+                                                    onChange={handlePhoneChange}
+                                                    onBlur={() => {
+                                                        // Validate on blur
+                                                        form.trigger('phone');
+                                                    }}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <Button className='mt-2' disabled={isLoading} type='submit'>
+                                    Continue
+                                </Button>
+
+                                <div className='relative my-2'>
+                                    <div className='absolute inset-0 flex items-center'>
+                                        <span className='w-full border-t' />
+                                    </div>
+                                    <div className='relative flex justify-center text-xs uppercase'>
+                                        <span className='bg-background text-muted-foreground px-2'>
+                                            Or you are an admin?
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <Button
+                                    className='mt-2'
+                                    variant='outline'
+                                    type="button"
+                                    onClick={() => navigate('/authentication/login')}
+                                >
+                                    Continue with email and password
+                                </Button>
+                            </form>
+                        </Form>
+
+                    ) : (
+                        <OtpForm
+                            title="Phone Login Verification"
+                            description={`Please enter the verification code sent to ${formatGhanaianPhoneNumber(phone)}`}
+                            onSubmit={handleSubmit}
+                            onResend={handleResend}
+                                onLogout={handleLogout}
+                                onReturn={handleReturn}
+                            submitButtonText="Verify Code"
+                            resendButtonText="Send new code"
+                        />
+                    )}
+
+                </CardContent>
+                <CardFooter>
+                    <p className='text-muted-foreground px-8 text-center text-sm'>
+                        By clicking login, you agree to our{' '}
+                        <a
+                            href='/terms'
+                            className='hover:text-primary underline underline-offset-4'
+                        >
+                            Terms of Service
+                        </a>{' '}
+                        and{' '}
+                        <a
+                            href='/privacy'
+                            className='hover:text-primary underline underline-offset-4'
+                        >
+                            Privacy Policy
+                        </a>
+                        .
+                    </p>
+                </CardFooter>
+            </Card>
+        </AuthLayout>
+    )
+}
+
+export default PhoneLoginForm
