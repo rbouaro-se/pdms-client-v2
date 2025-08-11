@@ -17,9 +17,10 @@ import { IconTool, IconUser } from "@tabler/icons-react";
 import ComingSoon from "@/components/coming-soon";
 import { Main } from "@/components/layout/main";
 import Overview  from "@/pages/Overview";
-import Tasks from "@/pages/tasks";
+import Parcels from "@/pages/parcels";
 import Users from "@/pages/users";
-import Apps from "@/pages/apps";
+import Customers from "@/pages/customers";
+import Dispatchers from "@/pages/dispatchers";
 
 // import ChangePassword from "@/pages/authentication/ChangePassword";
 // import PhoneLogin from "@/pages/authentication/PhoneLogin";
@@ -103,10 +104,10 @@ const AppRoutes = () => {
         <Route element={<AdminLayout />} >
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="parcels" element={<Tasks />} />
+          <Route path="parcels" element={<Parcels />} />
           <Route path="users" element={<Users />} />
-          <Route path="customers" element={<Users />} />
-          <Route path="dispatchers" element={<Apps />} />
+          <Route path="customers" element={<Customers />} />
+          <Route path="dispatchers" element={<Dispatchers />} />
         </Route>
       </Route>
 
