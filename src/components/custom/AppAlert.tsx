@@ -1,6 +1,4 @@
 import * as React from 'react';
-
-
 import { TAlert } from '@/types';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { clearAlert } from '@/redux/slices/notification';
@@ -40,12 +38,7 @@ export default function AppAlert() {
 
     return (
         <>
-           
-            {appAlert ? <div style={{
-                display: 'flex', flexDirection: 'column', gap: 2, width: '100%',
-               
-               
-}}>
+            {appAlert ? <div style={{display: 'flex', flexDirection: 'column', gap: 2, width: '100%',}}>
                 <Alert
                     variant="default"
                     color={appAlert.color}
