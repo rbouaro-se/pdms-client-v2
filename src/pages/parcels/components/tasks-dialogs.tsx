@@ -2,13 +2,13 @@ import { showSubmittedData } from '@/utils/show-submitted-data'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { useTasks } from '../context/tasks-context'
 import { TasksImportDialog } from './tasks-import-dialog'
-import { TasksMutateDrawer } from './tasks-mutate-drawer'
+import { CreateParcelDrawer } from './create-parcel-drawer'
 
 export function TasksDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useTasks()
   return (
     <>
-      <TasksMutateDrawer
+      <CreateParcelDrawer
         key='task-create'
         open={open === 'create'}
         onOpenChange={() => setOpen('create')}
@@ -22,7 +22,7 @@ export function TasksDialogs() {
 
       {currentRow && (
         <>
-          <TasksMutateDrawer
+          <CreateParcelDrawer
             key={`task-update-${currentRow.id}`}
             open={open === 'update'}
             onOpenChange={() => {
@@ -31,7 +31,7 @@ export function TasksDialogs() {
                 setCurrentRow(null)
               }, 500)
             }}
-            currentRow={currentRow}
+            // currentRow={currentRow}
           />
 
           <ConfirmDialog

@@ -3,26 +3,48 @@ import { Table } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableViewOptions } from './data-table-view-options'
-import { priorities, statuses } from '../data/data'
 import { DataTableFacetedFilter } from './data-table-faceted-filter'
+import { Parcel } from '@/types/parcel'
 
-interface DataTableToolbarProps<TData> {
-  table: Table<TData>
+// Define parcel-specific filter options
+const parcelStatuses = [
+  { value: 'registered', label: 'Registered' },
+  { value: 'in_transit', label: 'In Transit' },
+  { value: 'available_for_pickup', label: 'Available for Pickup' },
+  { value: 'delivered', label: 'Delivered' },
+  { value: 'returned', label: 'Returned' },
+] 
+
+const parcelTypes = [
+  { value: 'document', label: 'Document' },
+  { value: 'package', label: 'Package' },
+  { value: 'fragile', label: 'Fragile' },
+  { value: 'perishable', label: 'Perishable' },
+]
+
+const deliveryTypes = [
+  { value: 'standard', label: 'Standard' },
+  { value: 'express', label: 'Express' },
+  { value: 'same_day', label: 'Same Day' },
+]
+
+interface DataTableToolbarProps {
+  table: Table<Parcel>
 }
 
-export function DataTableToolbar<TData>({
+export function DataTableToolbar({
   table,
-}: DataTableToolbarProps<TData>) {
+}: DataTableToolbarProps) {
   const isFiltered = table.getState().columnFilters.length > 0
 
   return (
     <div className='flex items-center justify-between'>
       <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
         <Input
-          placeholder='Filter tasks...'
-          value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
+          placeholder='Filter parcels...'
+          value={(table.getColumn('parcelId')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('title')?.setFilterValue(event.target.value)
+            table.getColumn('parcelId')?.setFilterValue(event.target.value)
           }
           className='h-8 w-[150px] lg:w-[250px]'
         />
@@ -31,14 +53,21 @@ export function DataTableToolbar<TData>({
             <DataTableFacetedFilter
               column={table.getColumn('status')}
               title='Status'
-              options={statuses}
+              options={parcelStatuses}
             />
           )}
-          {table.getColumn('priority') && (
+          {table.getColumn('parcelType') && (
             <DataTableFacetedFilter
-              column={table.getColumn('priority')}
-              title='Priority'
-              options={priorities}
+              column={table.getColumn('parcelType')}
+              title='Type'
+              options={parcelTypes}
+            />
+          )}
+          {table.getColumn('deliveryType') && (
+            <DataTableFacetedFilter
+              column={table.getColumn('deliveryType')}
+              title='Delivery'
+              options={deliveryTypes}
             />
           )}
         </div>

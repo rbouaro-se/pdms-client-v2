@@ -9,14 +9,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
+import { Parcel } from '@/types/parcel'
 
-interface DataTableViewOptionsProps<TData> {
-  table: Table<TData>
+interface DataTableViewOptionsProps<Parcel> {
+  table: Table<Parcel>
 }
 
-export function DataTableViewOptions<TData>({
+export function DataTableViewOptions<Parcel>({
   table,
-}: DataTableViewOptionsProps<TData>) {
+}: DataTableViewOptionsProps<Parcel>) {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
