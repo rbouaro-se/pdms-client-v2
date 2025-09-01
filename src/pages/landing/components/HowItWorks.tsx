@@ -10,28 +10,28 @@ interface FeatureProps {
 
 const features: FeatureProps[] = [
   {
-    icon: <MedalIcon />,
-    title: "Accessibility",
+    icon: <MapIcon />,
+    title: "Request Pickup",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+      "Schedule a pickup online or by phone. Our team collects your parcel from your location, anywhere in Ghana.",
   },
   {
-    icon: <MapIcon />,
-    title: "Community",
+    icon: <MedalIcon />,
+    title: "Secure Handling",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+      "Your package is handled with care and tracked throughout its journey for maximum security.",
   },
   {
     icon: <PlaneIcon />,
-    title: "Scalability",
+    title: "Fast Delivery",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+      "We deliver your parcel quickly using our fleet of vans, trucks, motorcycles, and buses.",
   },
   {
     icon: <GiftIcon />,
-    title: "Gamification",
+    title: "Proof of Delivery",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+      "Receive instant delivery confirmation and updates, ensuring peace of mind for every shipment.",
   },
 ];
 
@@ -42,15 +42,14 @@ export const HowItWorks = () => {
       className="container text-center py-24 sm:py-32"
     >
       <h2 className="text-3xl md:text-4xl font-bold ">
-        How It{" "}
+        How We{" "}
         <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
-          Works{" "}
+          Operate
         </span>
-        Step-by-Step Guide
+      
       </h2>
       <p className="md:w-3/4 mx-auto mt-4 mb-8 text-xl text-muted-foreground">
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis
-        dolor pariatur sit!
+        From pickup to delivery, our process is designed for speed, security, and convenience. Here’s how we get your parcels delivered across Ghana.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

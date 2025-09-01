@@ -4,11 +4,43 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import LongText from '@/components/long-text'
 import { callTypes, userTypes } from '../data/data'
-import { User } from '../data/schema'
+import { User, UserStatus } from '../data/schema'
 import { DataTableColumnHeader } from './data-table-column-header'
 import { DataTableRowActions } from './data-table-row-actions'
+import { SystemUser } from '@/types/user'
+import moment from 'moment'
 
-export const columns: ColumnDef<User>[] = [
+// Function to format role display names
+const formatRoleDisplayName = (role: string): string => {
+  const roleMap: Record<string, string> = {
+    'customer_service': 'Customer Service',
+    'branch_manager': 'Manager',
+    'admin': 'Admin',
+    'agent': 'Agent',
+    'customer': 'Customer'
+  };
+
+  return roleMap[role] || role.split('_').map(word =>
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ');
+};
+
+// Function to format date for display using Moment.js
+const formatDate = (dateString: string | undefined): string => {
+  if (!dateString) return '-';
+
+  const date = moment(dateString);
+  return date.format('MMM DD, YYYY, hh:mm A');
+};
+
+// Function to get relative time (e.g., "2 hours ago")
+const getRelativeTime = (dateString: string | undefined): string => {
+  if (!dateString) return '-';
+
+  return moment(dateString).fromNow();
+};
+
+export const columns: ColumnDef<SystemUser>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -40,12 +72,12 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'username',
+    accessorKey: 'id',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Username' />
+      <DataTableColumnHeader column={column} title='User ID' />
     ),
     cell: ({ row }) => (
-      <LongText className='max-w-36'>{row.getValue('username')}</LongText>
+      <LongText className='max-w-36'>{row.getValue('id')}</LongText>
     ),
     meta: {
       className: cn(
@@ -55,6 +87,18 @@ export const columns: ColumnDef<User>[] = [
       ),
     },
     enableHiding: false,
+  },
+  {
+    accessorKey: 'username',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Username' />
+    ),
+    cell: ({ row }) => (
+      <LongText className='max-w-36'>{row.getValue('username')}</LongText>
+    ),
+    meta: {
+      className: 'w-36'
+    },
   },
   {
     id: 'fullName',
@@ -78,11 +122,19 @@ export const columns: ColumnDef<User>[] = [
     ),
   },
   {
-    accessorKey: 'phoneNumber',
+    id: 'branchInfo',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Phone Number' />
+      <DataTableColumnHeader column={column} title='Branch' />
     ),
-    cell: ({ row }) => <div>{row.getValue('phoneNumber')}</div>,
+    cell: ({ row }) => {
+      const branch = row.original.branch
+      return (
+        <div className='flex flex-col space-y-1'>
+          <div>{branch?.name}</div>
+          <div className='text-xs text-muted-foreground'>{branch?.branchId}</div>
+        </div>
+      )
+    },
     enableSorting: false,
   },
   {
@@ -91,12 +143,12 @@ export const columns: ColumnDef<User>[] = [
       <DataTableColumnHeader column={column} title='Status' />
     ),
     cell: ({ row }) => {
-      const { status } = row.original
-      const badgeColor = callTypes.get(status)
+      const status = row.getValue('status') as string
+      const badgeColor = callTypes.get(status as UserStatus)
       return (
         <div className='flex space-x-2'>
           <Badge variant='outline' className={cn('capitalize', badgeColor)}>
-            {row.getValue('status')}
+            {status}
           </Badge>
         </div>
       )
@@ -104,8 +156,6 @@ export const columns: ColumnDef<User>[] = [
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
     },
-    enableHiding: false,
-    enableSorting: false,
   },
   {
     accessorKey: 'role',
@@ -113,11 +163,16 @@ export const columns: ColumnDef<User>[] = [
       <DataTableColumnHeader column={column} title='Role' />
     ),
     cell: ({ row }) => {
-      const { role } = row.original
-      const userType = userTypes.find(({ value }) => value === role)
+      const role = row.getValue('role') as string
+      const userType = userTypes.find(({ value }) => value === role.toLowerCase())
+      const displayName = formatRoleDisplayName(role);
 
       if (!userType) {
-        return null
+        return (
+          <div className='flex items-center gap-x-2'>
+            <span className='text-sm capitalize'>{displayName}</span>
+          </div>
+        )
       }
 
       return (
@@ -125,15 +180,63 @@ export const columns: ColumnDef<User>[] = [
           {userType.icon && (
             <userType.icon size={16} className='text-muted-foreground' />
           )}
-          <span className='text-sm capitalize'>{row.getValue('role')}</span>
+          <span className='text-sm'>{displayName}</span>
         </div>
       )
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
     },
-    enableSorting: false,
-    enableHiding: false,
+  },
+  {
+    id: 'createdAt',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Date Created' />
+    ),
+    cell: ({ row }) => {
+      const createdAt = row.original.createdAt;
+      return (
+        <div className='flex flex-col space-y-1 min-w-[140px]'>
+          <div className='text-sm font-medium'>{formatDate(createdAt)}</div>
+          {createdAt && (
+            <div className='text-xs text-muted-foreground'>
+              {getRelativeTime(createdAt)}
+            </div>
+          )}
+        </div>
+      );
+    },
+    enableSorting: true,
+    sortingFn: (rowA, rowB) => {
+      const dateA = rowA.original.createdAt ? moment(rowA.original.createdAt).valueOf() : 0;
+      const dateB = rowB.original.createdAt ? moment(rowB.original.createdAt).valueOf() : 0;
+      return dateA - dateB;
+    },
+  },
+  {
+    id: 'updatedAt',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Last Updated' />
+    ),
+    cell: ({ row }) => {
+      const updatedAt = row.original.updatedAt;
+      return (
+        <div className='flex flex-col space-y-1 min-w-[140px]'>
+          <div className='text-sm font-medium'>{formatDate(updatedAt)}</div>
+          {updatedAt && (
+            <div className='text-xs text-muted-foreground'>
+              {getRelativeTime(updatedAt)}
+            </div>
+          )}
+        </div>
+      );
+    },
+    enableSorting: true,
+    sortingFn: (rowA, rowB) => {
+      const dateA = rowA.original.updatedAt ? moment(rowA.original.updatedAt).valueOf() : 0;
+      const dateB = rowB.original.updatedAt ? moment(rowB.original.updatedAt).valueOf() : 0;
+      return dateA - dateB;
+    },
   },
   {
     id: 'actions',

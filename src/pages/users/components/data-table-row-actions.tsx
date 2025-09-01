@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { Row } from '@tanstack/react-table'
-import { IconEdit, IconTrash } from '@tabler/icons-react'
+import { IconEdit, IconTrash, IconPlayerPlay } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -11,14 +11,18 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useUsers } from '../context/users-context'
-import { User } from '../data/schema'
+import { SystemUser } from '@/types/user'
 
 interface DataTableRowActionsProps {
-  row: Row<User>
+  row: Row<SystemUser>
 }
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useUsers()
+  const user = row.original
+
+  const isSuspended = user.status === 'suspended' 
+
   return (
     <>
       <DropdownMenu modal={false}>
@@ -44,18 +48,36 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => {
-              setCurrentRow(row.original)
-              setOpen('delete')
-            }}
-            className='text-red-500!'
-          >
-            Delete
-            <DropdownMenuShortcut>
-              <IconTrash size={16} />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
+
+          {isSuspended ? (
+            // Reinstatement option for suspended users
+            <DropdownMenuItem
+              onClick={() => {
+                setCurrentRow(row.original)
+                setOpen('reinstate')
+              }}
+              className='text-green-600!'
+            >
+              Reinstate
+              <DropdownMenuShortcut>
+                <IconPlayerPlay size={16} className='text-green-600' />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          ) : (
+            // Suspension option for active users
+            <DropdownMenuItem
+              onClick={() => {
+                setCurrentRow(row.original)
+                setOpen('suspend')
+              }}
+              className='text-amber-600!'
+            >
+              Suspend
+              <DropdownMenuShortcut>
+                <IconTrash size={16} className='text-amber-600' />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </>

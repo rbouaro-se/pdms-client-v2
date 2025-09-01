@@ -10,14 +10,21 @@ import { UsersTable } from './components/users-table'
 import UsersProvider from './context/users-context'
 import { userListSchema } from './data/schema'
 import { users } from './data/users'
+import { useGetCustomersQuery } from '@/api/slices/customerApiSlice'
 
 export default function Users() {
   // Parse user list
   const userList = userListSchema.parse(users)
+  const { data } = useGetCustomersQuery({
+    pageNumber: 0,
+    pageSize: 1000,
+  });
+
+  console.log(data)
 
   return (
     <UsersProvider>
-      <Header fixed>
+      <Header >
         <Search />
         <div className='ml-auto flex items-center space-x-4'>
           <ThemeSwitch />
@@ -32,15 +39,15 @@ export default function Users() {
       <Main>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>User List</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>Customers</h2>
             <p className='text-muted-foreground'>
               Manage your users and their roles here.
             </p>
           </div>
-          <UsersPrimaryButtons />
+          {/* <UsersPrimaryButtons /> */}
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <UsersTable data={userList} columns={columns} />
+          <UsersTable data={data?.content || []} columns={columns} />
         </div>
       </Main>
 

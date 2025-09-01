@@ -42,7 +42,6 @@ export function DataTableRowActions<Parcel>({
   row,
 }: DataTableRowActionsProps<Parcel>) {
   const parcel = parcelSchema.parse(row.original)
-  const { setOpen, setCurrentRow } = useTasks()
 
   // API mutations
   const [downloadReceipt] = useDownloadParcelReceiptMutation()

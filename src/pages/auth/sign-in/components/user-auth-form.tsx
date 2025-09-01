@@ -20,6 +20,7 @@ import { useLoginMutation } from '@/api/slices/auth'
 import { IAPIError, IResponse } from '@/types'
 import { SystemUser } from '@/types/user'
 import { setUser } from '@/redux/slices/auth'
+import { notifyError, notifySuccess } from '@/components/custom/notify'
 
 type UserAuthFormProps = HTMLAttributes<HTMLFormElement>
 
@@ -67,11 +68,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         console.log(response);
 
         dispatch(setUser({ ...response.data, type: "system" }))
-
+      
         navigate(from, { replace: true })
       } else {
         const res = response.error as IAPIError
-
+        notifyError(dispatch, 'Failed to login. Email or password incorrect')
         console.log(res);
         
 

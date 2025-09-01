@@ -21,7 +21,7 @@ export function UsersDialogs() {
 
       {currentRow && (
         <>
-          <UsersActionDialog
+          {/* <UsersActionDialog
             key={`user-edit-${currentRow.id}`}
             open={open === 'edit'}
             onOpenChange={() => {
@@ -31,7 +31,19 @@ export function UsersDialogs() {
               }, 500)
             }}
             currentRow={currentRow}
-          />
+          /> */}
+
+          {/* <ParcelHistoryDialog
+            key={`user-edit-${currentRow.id}`}
+            open={open === 'edit'}
+            onOpenChange={() => {
+              setOpen('edit')
+              setTimeout(() => {
+                setCurrentRow(null)
+              }, 500)
+            }}
+            customer={currentRow}
+          /> */}
 
           <UsersDeleteDialog
             key={`user-delete-${currentRow.id}`}

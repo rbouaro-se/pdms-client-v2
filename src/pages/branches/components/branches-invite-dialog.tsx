@@ -24,7 +24,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { userTypes } from '../data/data'
 
 const formSchema = z.object({
   email: z.email({
@@ -94,7 +93,7 @@ export function UsersInviteDialog({ open, onOpenChange }: Props) {
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name='role'
               render={({ field }) => (
@@ -112,7 +111,7 @@ export function UsersInviteDialog({ open, onOpenChange }: Props) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name='desc'

@@ -8,14 +8,13 @@ import { DataTable } from './components/data-table'
 import { TasksDialogs } from './components/tasks-dialogs'
 import { ParcelsPrimaryButtons } from './components/parcels-primary-buttons'
 import TasksProvider from './context/tasks-context'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSearchParcelsQuery } from '@/api/slices/parcelApiSlice'
-import { Parcel } from '@/types/parcel'
+
 
 export default function Parcels() {
-
  
-  const [page, setPage] = useState(0);
+  const [page] = useState(0);
   const pageSize = 1000;
 
   const { data } = useSearchParcelsQuery({

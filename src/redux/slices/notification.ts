@@ -1,5 +1,5 @@
-
-import { TAlert, TFeedback } from "@/types";
+import { TFeedback } from "@/types";
+import { TAlert } from "@/types/alerts";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: {

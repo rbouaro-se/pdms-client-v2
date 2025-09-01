@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -6,34 +5,34 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import image from "../../../assets/growth.png";
-import image3 from "../../../assets/reflecting.png";
-import image4 from "../../../assets/looking-ahead.png";
+import image1 from "@/assets/testimony-1.jpg";
+import image2 from "@/assets/testimony-2.jpg";
+import image3 from "@/assets/testimony-3.jpg";
 
-interface FeatureProps {
-  title: string;
-  description: string;
+interface TestimonyProps {
+  name: string;
+  message: string;
   image: string;
 }
 
-const features: FeatureProps[] = [
+const testimonies: TestimonyProps[] = [
   {
-    title: "Responsive Design",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi nesciunt est nostrum omnis ab sapiente.",
-    image: image4,
+    name: "Kwame A.",
+    message:
+      "Delivery Express got my package to Kumasi in less than 24 hours. Fast, reliable, and friendly service!",
+    image: image1,
   },
   {
-    title: "Intuitive user interface",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi nesciunt est nostrum omnis ab sapiente.",
+    name: "Ama S.",
+    message:
+      "I love the real-time tracking. I always know where my parcel is. Highly recommended for business deliveries!",
+    image: image2,
+  },
+  {
+    name: "Yaw B.",
+    message:
+      "Affordable rates and professional drivers. My fragile items arrived safely. Will use again!",
     image: image3,
-  },
-  {
-    title: "AI-Powered insights",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi nesciunt est nostrum omnis ab sapiente.",
-    image: image,
   },
 ];
 
@@ -52,43 +51,31 @@ const featureList: string[] = [
 export const Features = () => {
   return (
     <section
-      id="features"
+      id="testimonials"
       className="container py-24 sm:py-32 space-y-8"
     >
       <h2 className="text-3xl lg:text-4xl font-bold md:text-center">
-        Many{" "}
+        What Our{" "}
         <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
-          Great Features
+          Customers Say
         </span>
       </h2>
 
-      <div className="flex flex-wrap md:justify-center gap-4">
-        {featureList.map((feature: string) => (
-          <div key={feature}>
-            <Badge
-              variant="secondary"
-              className="text-sm"
-            >
-              {feature}
-            </Badge>
-          </div>
-        ))}
-      </div>
-
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {features.map(({ title, description, image }: FeatureProps) => (
-          <Card key={title}>
+        {testimonies.map(({ name, message, image }: TestimonyProps) => (
+          <Card key={name}>
             <CardHeader>
-              <CardTitle>{title}</CardTitle>
+              <CardTitle>{name}</CardTitle>
             </CardHeader>
-
-            <CardContent>{description}</CardContent>
-
+            <CardContent>
+              <p className="text-muted-foreground">{message}</p>
+            </CardContent>
             <CardFooter>
               <img
                 src={image}
-                alt="About feature"
-                className="w-[200px] lg:w-[300px] mx-auto"
+                alt={name}
+                className="w-[100px] lg:w-[120px] mx-auto rounded-full bg-white"
+                style={{ background: "none" }}
               />
             </CardFooter>
           </Card>

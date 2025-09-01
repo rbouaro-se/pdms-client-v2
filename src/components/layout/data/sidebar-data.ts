@@ -1,6 +1,6 @@
-import { IconLayoutDashboard,  IconUsersGroup, IconPackages,  IconTruckDelivery, IconUsers } from '@tabler/icons-react';
+import { IconLayoutDashboard, IconUsersGroup, IconPackages, IconTruckDelivery, IconUsers } from '@tabler/icons-react';
 import { UserRole } from '@/types/user';
-import {  Settings2Icon } from 'lucide-react';
+import { Settings2Icon, Split } from 'lucide-react';
 import { NavGroup } from '../types';
 
 
@@ -19,6 +19,12 @@ export const navGroups: NavGroup[] = [
         url: '/pages/admin/parcels',
         icon: IconPackages,
         roles: ['admin'],
+      },
+      {
+        title: 'Branches',
+        url: '/pages/admin/branches',
+        icon: Split,
+        roles: ['admin', 'branch_manager'],
       },
       {
         title: 'Dispatchers',
@@ -43,6 +49,11 @@ export const navGroups: NavGroup[] = [
         icon: Settings2Icon,
         roles: ['agent', 'admin'],
         items: [
+          {
+            title: 'Delivery Configurations',
+            url: '/pages/admin/settings/delivery-configurations',
+            roles: ['admin'],
+          },
           {
             title: 'Account',
             url: '/pages/admin/settings',

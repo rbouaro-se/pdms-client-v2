@@ -1,9 +1,6 @@
-import { useState } from 'react'
-import {
-  IconAdjustmentsHorizontal,
-  IconSortAscendingLetters,
-  IconSortDescendingLetters,
-} from '@tabler/icons-react'
+'use client'
+
+import { JSX, useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -19,37 +16,109 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { apps } from './data/apps'
+import { Truck, Bike, Bus } from 'lucide-react'
+import { DispatchersDialogs } from './components/dispatchers-dialogs'
+import { DispatchersPrimaryButtons } from './components/dispatchers-primary-buttons'
+import DispatchersContext, { useDispatchers } from './context/dispatchers-context'
+import { Dispatcher } from '@/types/dispatcher'
+import { useSearchDispatchersQuery } from '@/api/slices/dispatcherApiSlice'
 
-const appText = new Map<string, string>([
-  ['all', 'All Apps'],
-  ['connected', 'Connected'],
-  ['notConnected', 'Not Connected'],
+const dispatcherIcons: Record<string, JSX.Element> = {
+  truck: <Truck className="text-blue-600" size={28} />,
+  van: <Truck className="text-green-600" size={28} />,
+  motorcycle: <Bike className="text-orange-600" size={28} />,
+  bus: <Bus className="text-purple-600" size={28} />,
+}
+
+const typeText = new Map([
+  ['ALL', 'All Types'],
+  ['truck', 'Truck'],
+  ['van', 'Van'],
+  ['motorcycle', 'Motorcycle'],
+  ['bus', 'Bus'],
 ])
 
-export default function Apps() {
-  const [sort, setSort] = useState('ascending')
-  const [appType, setAppType] = useState('all')
-  const [searchTerm, setSearchTerm] = useState('')
+const getAgentFullName = (agent: { firstName?: string; lastName?: string } | undefined) =>
+  agent ? `${agent.firstName ?? ''} ${agent.lastName ?? ''}`.trim() : '—'
 
-  const filteredApps = apps
-    .sort((a, b) =>
-      sort === 'ascending'
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name)
-    )
-    .filter((app) =>
-      appType === 'connected'
-        ? app.connected
-        : appType === 'notConnected'
-          ? !app.connected
-          : true
-    )
-    .filter((app) => app.name.toLowerCase().includes(searchTerm.toLowerCase()))
+function DispatcherCard({ dispatcher }: { dispatcher: Dispatcher }) {
+  const { setOpen, setCurrentRow } = useDispatchers()
+
+  const handleEditClick = () => {
+    setCurrentRow(dispatcher)
+    setOpen('edit')
+  }
 
   return (
-    <>
-      {/* ===== Top Heading ===== */}
+    <li
+      key={dispatcher.dispatcherId ?? dispatcher.dispatcherId}
+      className='rounded-lg border p-4 hover:shadow-md cursor-pointer transition-colors hover:border-primary/50'
+      onClick={handleEditClick}
+    >
+      <div className='mb-6 flex items-center justify-between'>
+        <div className='bg-muted flex size-10 items-center justify-center rounded-lg p-2'>
+          {dispatcherIcons[dispatcher.type]}
+        </div>
+        <Button
+          variant={dispatcher.available ? 'outline' : 'ghost'}
+          size='sm'
+          className={dispatcher.available
+            ? 'border border-green-300 bg-green-50 hover:bg-green-100 dark:border-green-700 dark:bg-green-950 dark:hover:bg-green-900'
+            : 'border border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed'}
+          disabled={!dispatcher.available}
+        >
+          {dispatcher.available ? 'Available' : 'Unavailable'}
+        </Button>
+      </div>
+      <div>
+        <h2 className='mb-1 font-semibold text-lg'>
+          {dispatcher.dispatcherNumber}
+        </h2>
+        <p className='text-muted-foreground mb-1'>
+          Type: <span className='font-medium'>{typeText.get(dispatcher.type)}</span>
+        </p>
+        <p className='text-muted-foreground'>
+          Agent: <span className='font-medium'>{getAgentFullName(dispatcher.agent)}</span>
+        </p>
+      </div>
+    </li>
+  )
+}
+
+export default function Dispatchers() {
+  const [type, setType] = useState<string>('ALL')
+  const [searchTerm, setSearchTerm] = useState<string>('')
+
+  // debounce the search term slightly so we don't spam the backend on every keystroke
+  const [debouncedSearch, setDebouncedSearch] = useState<string>(searchTerm)
+  useEffect(() => {
+    const t = window.setTimeout(() => setDebouncedSearch(searchTerm), 250)
+    return () => window.clearTimeout(t)
+  }, [searchTerm])
+
+  // page size for listing (adjust to your needs)
+  const pageable = useMemo(() => ({ size: 200, page: 0 }), [])
+
+  // Use RTK Query searchDispatchers query - it returns a Page<DispatcherResponse>
+  const { data, isLoading, isFetching, isError, refetch } = useSearchDispatchersQuery({
+    pageable,
+    searchTerm: debouncedSearch || undefined
+  })
+
+  // Map backend results content to Dispatcher[]; result may be undefined while loading
+  const dispatchers: Dispatcher[] = data?.content ?? []
+
+  // Local derived filtered list for client-side safety (ensures UI still filters if backend didn't)
+  const filteredDispatchers = dispatchers
+    .filter((d) => (type === 'ALL' ? true : d.type === type))
+    .filter(
+      (d) =>
+        d.dispatcherNumber?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        getAgentFullName(d.agent).toLowerCase().includes(debouncedSearch.toLowerCase())
+    )
+
+  return (
+    <DispatchersContext>
       <Header>
         <Search />
         <div className='ml-auto flex items-center gap-4'>
@@ -62,90 +131,64 @@ export default function Apps() {
         </div>
       </Header>
 
-      {/* ===== Content ===== */}
-      <Main fixed>
+      <Main>
         <div>
-        <div>
-          <h1 className='text-2xl font-bold tracking-tight'>
-            App Integrations
-          </h1>
-          <p className='text-muted-foreground'>
-            Here&apos;s a list of your apps for the integration!
-          </p>
-        </div>
-        <div className='my-4 flex items-end justify-between sm:my-0 sm:items-center'>
-          <div className='flex flex-col gap-4 sm:my-4 sm:flex-row'>
-            <Input
-              placeholder='Filter apps...'
-              className='h-9 w-40 lg:w-[250px]'
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Select value={appType} onValueChange={setAppType}>
-              <SelectTrigger className='w-36'>
-                <SelectValue>{appText.get(appType)}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='all'>All Apps</SelectItem>
-                <SelectItem value='connected'>Connected</SelectItem>
-                <SelectItem value='notConnected'>Not Connected</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className='mb-2 flex flex-wrap items-center justify-between space-y-2'>
+            <div>
+              <h1 className='text-2xl font-bold tracking-tight'>
+                Dispatchers
+              </h1>
+              <p className='text-muted-foreground'>
+                Browse and manage your delivery dispatchers by type and availability.
+              </p>
+            </div>
+            <DispatchersPrimaryButtons />
           </div>
 
-          <Select value={sort} onValueChange={setSort}>
-            <SelectTrigger className='w-16'>
-              <SelectValue>
-                <IconAdjustmentsHorizontal size={18} />
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent align='end'>
-              <SelectItem value='ascending'>
-                <div className='flex items-center gap-4'>
-                  <IconSortAscendingLetters size={16} />
-                  <span>Ascending</span>
-                </div>
-              </SelectItem>
-              <SelectItem value='descending'>
-                <div className='flex items-center gap-4'>
-                  <IconSortDescendingLetters size={16} />
-                  <span>Descending</span>
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <Separator className='shadow-sm' />
+          <div className='my-4 flex items-end justify-between sm:my-0 sm:items-center'>
+            <div className='flex flex-col gap-4 sm:my-4 sm:flex-row'>
+              <Input
+                placeholder='Search by number or agent...'
+                className='h-9 w-40 lg:w-[250px]'
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <Select value={type} onValueChange={setType}>
+                <SelectTrigger className='w-36'>
+                  <SelectValue>{typeText.get(type)}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='ALL'>All Types</SelectItem>
+                  <SelectItem value='truck'>Truck</SelectItem>
+                  <SelectItem value='van'>Van</SelectItem>
+                  <SelectItem value='motorcycle'>Motorcycle</SelectItem>
+                  <SelectItem value='bus'>Bus</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <Separator className='shadow-sm' />
 
-        <ul className='faded-bottom no-scrollbar grid gap-4 overflow-auto pt-4 pb-16 md:grid-cols-2 lg:grid-cols-3'>
-          {filteredApps.map((app) => (
-            <li
-              key={app.name}
-              className='rounded-lg border p-4 hover:shadow-md'
-            >
-              <div className='mb-8 flex items-center justify-between'>
-                <div
-                  className={`bg-muted flex size-10 items-center justify-center rounded-lg p-2`}
-                >
-                  {app.logo}
-                </div>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  className={`${app.connected ? 'border border-blue-300 bg-blue-50 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-950 dark:hover:bg-blue-900' : ''}`}
-                >
-                  {app.connected ? 'Connected' : 'Connect'}
-                </Button>
-              </div>
-              <div>
-                <h2 className='mb-1 font-semibold'>{app.name}</h2>
-                <p className='line-clamp-2 text-gray-500'>{app.desc}</p>
-              </div>
-            </li>
-          ))}
-          </ul>
+          {/* States: loading, error, empty, list */}
+          {isLoading || isFetching ? (
+            <div className='p-4 text-sm text-muted-foreground'>Loading dispatchers…</div>
+          ) : isError ? (
+            <div className='p-4 text-sm text-destructive'>
+              Failed to load dispatchers. <Button variant='link' onClick={() => refetch()}>Retry</Button>
+            </div>
+          ) : filteredDispatchers.length === 0 ? (
+            <div className='p-6 text-sm text-muted-foreground'>No dispatchers found.</div>
+          ) : (
+            <ul className='faded-bottom no-scrollbar grid gap-4 overflow-auto pt-4 pb-16 md:grid-cols-2 lg:grid-cols-3'>
+              {filteredDispatchers.map((dispatcher) => (
+                <DispatcherCard key={dispatcher.dispatcherId ?? dispatcher.dispatcherId} dispatcher={dispatcher} />
+              ))}
+            </ul>
+          )}
         </div>
       </Main>
-    </>
+
+      <DispatchersDialogs />
+    </DispatchersContext>
   )
 }

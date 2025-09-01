@@ -102,3 +102,31 @@ export const formatPhoneInput = (input: string): string => {
   // Limit to 12 characters (233 + 9 digits)
   return digits.slice(0, 12)
 }
+
+
+export const formatCurrency = (amount: number | string) => {
+  const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount
+  return new Intl.NumberFormat('en-US', {
+    style: 'decimal',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(numAmount)
+}
+
+export const formatGhanaCedis = (amount: number | string) => {
+  const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+  return new Intl.NumberFormat('en-GH', {
+    style: 'currency',
+    currency: 'GHS',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(numAmount);
+};
+
+export const formatGhanaCedisWithSymbol = (amount: number | string) => {
+  const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+  return `GH₵ ${new Intl.NumberFormat('en-GH', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(numAmount)}`;
+};

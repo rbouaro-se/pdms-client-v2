@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { TJobRequest } from "../../types/job";
+import { TJobRequest } from "../../types/parcel";
 
 const initialState: {
 	client: {

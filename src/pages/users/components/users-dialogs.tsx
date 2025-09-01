@@ -1,7 +1,6 @@
 import { useUsers } from '../context/users-context'
 import { UsersActionDialog } from './users-action-dialog'
-import { UsersDeleteDialog } from './users-delete-dialog'
-import { UsersInviteDialog } from './users-invite-dialog'
+import { UserStatusDialog } from './users-suspend-dialog'
 
 export function UsersDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useUsers()
@@ -11,12 +10,6 @@ export function UsersDialogs() {
         key='user-add'
         open={open === 'add'}
         onOpenChange={() => setOpen('add')}
-      />
-
-      <UsersInviteDialog
-        key='user-invite'
-        open={open === 'invite'}
-        onOpenChange={() => setOpen('invite')}
       />
 
       {currentRow && (
@@ -33,16 +26,30 @@ export function UsersDialogs() {
             currentRow={currentRow}
           />
 
-          <UsersDeleteDialog
+          <UserStatusDialog
             key={`user-delete-${currentRow.id}`}
-            open={open === 'delete'}
+            open={open === 'suspend'}
             onOpenChange={() => {
-              setOpen('delete')
+              setOpen('suspend')
               setTimeout(() => {
                 setCurrentRow(null)
               }, 500)
             }}
             currentRow={currentRow}
+            action="suspend"
+          />
+
+          <UserStatusDialog
+            key={`user-delete-${currentRow.id}`}
+            open={open === 'reinstate'}
+            onOpenChange={() => {
+              setOpen('reinstate')
+              setTimeout(() => {
+                setCurrentRow(null)
+              }, 500)
+            }}
+            currentRow={currentRow}
+            action="reinstate"
           />
         </>
       )}

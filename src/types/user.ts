@@ -1,3 +1,4 @@
+import { createApi } from '@reduxjs/toolkit/query/react';
 
 type Location = {
 	longitude: number;
@@ -26,7 +27,9 @@ export type SystemUser = {
 	lastName: string;
 	role: UserRole;
 	status: UserStatus;
-	branch: Branch;
+  branch: Branch;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Customer = {
@@ -34,7 +37,57 @@ export type Customer = {
   id: string
   name: string
   phoneNumber: string
+  email?:string
+  createdAt: string
 }
+
+export interface SystemUserRegistrationRequest {
+  email: string
+  username: string
+  firstName: string
+  lastName: string
+  role: UserRole
+  branchId: string
+}
+
+export interface SystemUserUpdateRequest {
+  username?: string
+  firstName?: string
+  lastName?: string
+  email?:string
+  role?: UserRole
+  status?: UserStatus
+  branchId?: string
+}
+
+export interface UserFetchOptions {
+  roles?: UserRole[]
+  status?: UserStatus
+  branchId?: string
+}
+export interface BranchResponse {
+  branchId: string
+  name: string
+  location: LocationDTO
+  contact: ContactDTO
+}
+
+export interface LocationDTO {
+  longitude: number
+  latitude: number
+  description: string
+}
+
+export interface ContactDTO {
+  phoneNumber: string
+  email: string
+}
+
+export interface Agent {
+  firstName: string
+  lastName: string
+}
+
 
 export type AppUser = SystemUser | Customer;
 

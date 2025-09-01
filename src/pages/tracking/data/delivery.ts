@@ -1,4 +1,4 @@
-import { Parcel } from "./chat-types";
+import { Parcel } from "@/types/parcel";
 
 export const dummyParcels: Parcel[] = [
   {

@@ -1,56 +1,56 @@
-import { Radar } from "lucide-react";
+import { Truck, Bike, Bus, Package } from "lucide-react";
 import { JSX } from "react";
 
-interface SponsorProps {
+interface PartnerProps {
   icon: JSX.Element;
   name: string;
 }
 
-const sponsors: SponsorProps[] = [
+const partners: PartnerProps[] = [
   {
-    icon: <Radar size={34} />,
-    name: "Sponsor 1",
+    icon: <Truck size={34} />,
+    name: "DHL",
   },
   {
-    icon: <Radar size={34} />,
-    name: "Sponsor 2",
+    icon: <Bike size={34} />,
+    name: "Jumia Logistics",
   },
   {
-    icon: <Radar size={34} />,
-    name: "Sponsor 3",
+    icon: <Bus size={34} />,
+    name: "Metro Mass",
   },
   {
-    icon: <Radar size={34} />,
-    name: "Sponsor 4",
+    icon: <Package size={34} />,
+    name: "FedEx",
   },
   {
-    icon: <Radar size={34} />,
-    name: "Sponsor 5",
+    icon: <Truck size={34} />,
+    name: "UPS",
   },
   {
-    icon: <Radar size={34} />,
-    name: "Sponsor 6",
+    icon: <Package size={34} />,
+    name: "Ghana Post",
   },
 ];
 
 export const Sponsors = () => {
   return (
     <section
-      id="sponsors"
-      className="container pt-24 sm:py-32"
+      id="partners"
+      className="container pt-24 sm:py-10"
     >
       <h2 className="text-center text-md lg:text-xl font-bold mb-8 text-primary">
-        Investors and founders
+        Our Delivery Partners
       </h2>
 
       <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8">
-        {sponsors.map(({ icon, name }: SponsorProps) => (
+        {partners.map(({ icon, name }: PartnerProps) => (
           <div
             key={name}
             className="flex items-center gap-1 text-muted-foreground/60"
           >
             <span>{icon}</span>
-            <h3 className="text-xl  font-bold">{name}</h3>
+            <h3 className="text-xl font-bold">{name}</h3>
           </div>
         ))}
       </div>

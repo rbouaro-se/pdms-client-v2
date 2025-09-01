@@ -13,7 +13,7 @@ import Tracking from "@/pages/tracking";
 import Settings from "@/pages/settings";
 import SettingsProfile from "@/pages/settings/profile";
 import SettingsAccount from "@/pages/settings/account";
-import { IconTool, IconUser } from "@tabler/icons-react";
+import { IconSettings, IconTool, IconUser } from "@tabler/icons-react";
 import ComingSoon from "@/components/coming-soon";
 import { Main } from "@/components/layout/main";
 import Overview  from "@/pages/Overview";
@@ -21,6 +21,10 @@ import Parcels from "@/pages/parcels";
 import Users from "@/pages/users";
 import Customers from "@/pages/customers";
 import Dispatchers from "@/pages/dispatchers";
+import Customer from "@/pages/customer";
+import Branches from "@/pages/branches";
+import { PaDeliveryConfigurationForm } from "@/pages/settings/configurations/config-form";
+import DeliveryConfigurations from "@/pages/settings/configurations";
 
 // import ChangePassword from "@/pages/authentication/ChangePassword";
 // import PhoneLogin from "@/pages/authentication/PhoneLogin";
@@ -107,8 +111,35 @@ const AppRoutes = () => {
           <Route path="parcels" element={<Parcels />} />
           <Route path="users" element={<Users />} />
           <Route path="customers" element={<Customers />} />
+          <Route path="customers/:customerId" element={<Customer />} />
           <Route path="dispatchers" element={<Dispatchers />} />
+          <Route path="branches" element={<Branches />} />
+          <Route path="settings" element={<Settings sidebarNavItems={
+            [
+              {
+                title: 'Profile',
+                icon: <IconUser size={18} />,
+                href: '/pages/admin/settings/profile',
+              },
+              {
+                title: 'Account',
+                icon: <IconTool size={18} />,
+                href: '/pages/admin/settings/account',
+              },
+              {
+                title: 'Delivery Configurations',
+                icon: <IconSettings size={18} />,
+                href: '/pages/admin/settings/delivery-configurations',
+              }
+            ]
+          } />} >
+            <Route index element={<SettingsAccount />} />
+            <Route path="profile" element={<SettingsProfile />} />
+            <Route path="account" element={<SettingsAccount />} />
+            <Route path="delivery-configurations" element={<DeliveryConfigurations />} />
+          </Route>
         </Route>
+        
       </Route>
 
       <Route path="/pages/customer" element={<EnsureAuth restrictedTo={['customer']} />} >

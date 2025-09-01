@@ -13,6 +13,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  filterFns
 } from '@tanstack/react-table'
 import {
   Table,
@@ -22,9 +23,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { User } from '../data/schema'
 import { DataTablePagination } from './data-table-pagination'
 import { DataTableToolbar } from './data-table-toolbar'
+import { Customer } from '@/types/user'
 
 declare module '@tanstack/react-table' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -34,8 +35,8 @@ declare module '@tanstack/react-table' {
 }
 
 interface DataTableProps {
-  columns: ColumnDef<User>[]
-  data: User[]
+  columns: ColumnDef<Customer>[]
+  data: Customer[]
 }
 
 export function UsersTable({ columns, data }: DataTableProps) {
@@ -53,6 +54,7 @@ export function UsersTable({ columns, data }: DataTableProps) {
       rowSelection,
       columnFilters,
     },
+    filterFns,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,

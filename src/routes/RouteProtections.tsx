@@ -15,7 +15,9 @@ export const EnsureAuth = ({ restrictedTo }: IEnsureAuthProps) => {
 	setTimeout(() => {
 		console.log(restrictedTo);
 		
-		if (!user) {
+		if (user === null) {
+			console.log("User is null, redirecting to login...");
+			
 			return <Navigate to='/authentication/login' state={{ from: location.pathname }} replace />;
 		} 
 	}, 500);
@@ -55,6 +57,7 @@ export const EnsureAuth = ({ restrictedTo }: IEnsureAuthProps) => {
 export const EnsureGuest = () => {
 	const { user } = useAppSelector(state => state.auth);
 	const location = useLocation();
+		console.log("At the login page");
 
 	if (user) {
 		const from = location.state?.from?.pathname || '/pages/customer/home';
