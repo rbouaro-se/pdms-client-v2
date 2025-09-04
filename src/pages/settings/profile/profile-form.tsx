@@ -17,7 +17,9 @@ import { SystemUser, Customer } from '@/types/user'
 import { useAppSelector, useAppDispatch } from '@/redux/store'
 import { useUpdateSystemUserMutation } from '@/api/slices/users'
 import { notifySuccess, notifyError } from '@/components/custom/notify'
-
+// Add this import at the top with other imports
+import { useUpdateCustomerMutation } from '@/api/slices/customerApiSlice'
+import { setUser } from '@/redux/slices/auth'
 // Schema for System User (Admin/Staff)
 const systemUserSchema = z.object({
   username: z
@@ -41,12 +43,13 @@ const customerSchema = z.object({
   name: z
     .string()
     .min(2, 'Name must be at least 2 characters.')
-    .max(100, 'Name must not be longer than 100 characters.'),
-  email: z.string().email('Please enter a valid email address.').optional(),
-  phoneNumber: z
-    .string()
+    .max(50, 'Name must not be longer than 50 characters.'),
+  email: z.string()
+    .min(1, 'Email is required.')
+    .email('Please enter a valid email address.'),
+  phoneNumber: z.string()
     .min(1, 'Phone number is required.')
-    .regex(/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number.')
+    .regex(/^\+?\d{10,15}$/, 'Please enter a valid phone number (10-15 digits, optional + prefix).')
 })
 
 type SystemUserFormValues = z.infer<typeof systemUserSchema>
@@ -216,8 +219,7 @@ function SystemUserProfileForm({ user }: { user: SystemUser }) {
 
 function CustomerProfileForm({ user }: { user: Customer }) {
   const dispatch = useAppDispatch()
-  // You'll need to create a similar mutation for customers if available
-  // const [updateCustomer, { isLoading }] = useUpdateCustomerMutation()
+  const [updateCustomer, { isLoading }] = useUpdateCustomerMutation()
 
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(customerSchema),
@@ -231,13 +233,17 @@ function CustomerProfileForm({ user }: { user: Customer }) {
 
   const onSubmit = async (data: CustomerFormValues) => {
     try {
-      // If you have a customer update mutation, use it here
-      // await updateCustomer({
-      //   customerId: user.customerId,
-      //   payload: data
-      // }).unwrap()
+      const cus = await updateCustomer({
+        customerId: user.id, // Use user.id as the customer ID
+        payload: {
+          name: data.name,
+          email: data.email,
+          phoneNumber: data.phoneNumber
+        }
+      }).unwrap()
 
-      // For now, just show a success message
+      dispatch(setUser({ ...user, email: cus.email, name: cus.name, phoneNumber:cus.phoneNumber}))
+
       notifySuccess(dispatch, 'Profile Updated', 'Your profile has been updated successfully!')
     } catch (error: any) {
       console.error('Failed to update profile:', error)
@@ -301,6 +307,7 @@ function CustomerProfileForm({ user }: { user: Customer }) {
                         type="tel"
                         placeholder="Enter your phone number"
                         {...field}
+                        disabled
                       />
                     </FormControl>
                     <FormDescription>
@@ -312,8 +319,8 @@ function CustomerProfileForm({ user }: { user: Customer }) {
               />
             </div>
             <div className="flex justify-end">
-              <Button type="submit" disabled={false}> {/* Add isLoading here when you have the mutation */}
-                Update Profile
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? 'Updating...' : 'Update Profile'}
               </Button>
             </div>
           </form>

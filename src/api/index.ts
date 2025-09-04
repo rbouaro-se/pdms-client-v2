@@ -1,5 +1,5 @@
+import { clearUser } from '@/redux/slices/auth';
 import { BaseQueryApi, FetchArgs, createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { clearUser } from '../redux/slices/auth';
 
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
@@ -40,7 +40,6 @@ const baseQueryWithMinimalHandling = async (
 ) => {
   try {
     const result = await baseQuery(args, api, extraOptions)
-
     if (result?.error) {
       const err: any = result.error
       const status = err.status

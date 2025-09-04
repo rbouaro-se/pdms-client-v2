@@ -21,8 +21,8 @@ export default function Branches() {
     error,
     refetch,
   } = useGetAllBranchesQuery({
-    pageNumber: 0,
-    pageSize: 1000,
+    page: 0,
+    size: 1000,
   })
 
   const branches: Branch[] = data?.content ?? []

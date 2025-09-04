@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { showSubmittedData } from '@/utils/show-submitted-data'
+import { showSubmittedData } from '@/utils/statuses'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

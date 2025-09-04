@@ -1,6 +1,6 @@
-import { DotsHorizontalIcon, EyeOpenIcon } from '@radix-ui/react-icons'
+import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { Row } from '@tanstack/react-table'
-import { IconEdit, IconTrash } from '@tabler/icons-react'
+import { IconTrash } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -13,7 +13,7 @@ import {
 import { useUsers } from '../context/users-context'
 import { Customer } from './users-columns'
 import { Eye } from 'lucide-react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import {  useNavigate } from 'react-router-dom'
 
 interface DataTableRowActionsProps {
   row: Row<Customer>

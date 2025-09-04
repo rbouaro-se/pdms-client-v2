@@ -2,6 +2,7 @@ import * as React from 'react'
 import {
   ColumnDef,
   ColumnFiltersState,
+  FilterFn,
   SortingState,
   VisibilityState,
   flexRender,
@@ -24,10 +25,35 @@ import {
 import { DataTablePagination } from './data-table-pagination'
 import { DataTableToolbar } from './data-table-toolbar'
 import { Parcel } from '@/types/parcel'
+import { useState } from 'react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+}
+
+const userGlobalFilter: FilterFn<Parcel> = (row, _columnId, filterValue) => {
+  if (!filterValue) return true
+
+  const value = filterValue.toString().toLowerCase()
+  const parcel = row.original
+
+  // Search through all relevant fields - ensure we return boolean only
+  return (
+    (parcel.sender.phoneNumber.toLowerCase().includes(value) ?? false) ||
+    (parcel.recipient.phoneNumber.toLowerCase().includes(value) ?? false) ||
+    (parcel.origin.name.toLowerCase().includes(value) ?? false) ||
+    (parcel.destination.name.toLowerCase().includes(value) ?? false) ||
+    (parcel.status.toLowerCase().includes(value) ?? false) ||
+    (parcel.deliveryType.toLowerCase().includes(value) ?? false) ||
+    (parcel.parcelType.toLowerCase().includes(value) ?? false) ||
+    (parcel.parcelId?.toLowerCase().includes(value) ?? false)
+  )
+}
+
+// Define the filter functions object
+const filterFns = {
+  userGlobalFilter,
 }
 
 export function DataTable<_TData extends Parcel, TValue>({
@@ -42,6 +68,10 @@ export function DataTable<_TData extends Parcel, TValue>({
   )
   const [sorting, setSorting] = React.useState<SortingState>([])
 
+  const [globalFilter, setGlobalFilter] = useState('')
+
+  
+
   const table = useReactTable({
     data,
     columns,
@@ -50,7 +80,9 @@ export function DataTable<_TData extends Parcel, TValue>({
       columnVisibility,
       rowSelection,
       columnFilters,
+      globalFilter,
     },
+    filterFns,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
@@ -58,6 +90,7 @@ export function DataTable<_TData extends Parcel, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    onGlobalFilterChange: setGlobalFilter,
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),

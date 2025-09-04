@@ -18,7 +18,7 @@ export default function Parcels() {
   const pageSize = 1000;
 
   const { data } = useSearchParcelsQuery({
-    pageable: { pageNumber: page, pageSize },
+    pageable: { page: page, size:pageSize },
     filter: {},
   });
 

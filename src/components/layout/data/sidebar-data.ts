@@ -18,13 +18,13 @@ export const navGroups: NavGroup[] = [
         title: 'Parcels',
         url: '/pages/admin/parcels',
         icon: IconPackages,
-        roles: ['admin'],
+        roles: ['admin', 'branch_manager', 'customer_service'],
       },
       {
         title: 'Branches',
         url: '/pages/admin/branches',
         icon: Split,
-        roles: ['admin', 'branch_manager'],
+        roles: ['admin'],
       },
       {
         title: 'Dispatchers',
@@ -47,7 +47,7 @@ export const navGroups: NavGroup[] = [
       {
         title: 'Settings',
         icon: Settings2Icon,
-        roles: ['agent', 'admin'],
+        roles: ['admin', 'branch_manager', 'customer_service'],
         items: [
           {
             title: 'Delivery Configurations',
@@ -57,12 +57,12 @@ export const navGroups: NavGroup[] = [
           {
             title: 'Account',
             url: '/pages/admin/settings',
-            roles: ['admin'],
+            roles: ['admin', 'branch_manager', 'customer_service'],
           },
           {
             title: 'Profile',
             url: '/pages/admin/settings/profile',
-            roles: ['admin'],
+            roles: ['admin', 'branch_manager', 'customer_service'],
           },
         ],
       },

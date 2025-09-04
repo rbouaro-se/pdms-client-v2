@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconMailPlus, IconSend } from '@tabler/icons-react'
-import { showSubmittedData } from '@/utils/show-submitted-data'
+import { showSubmittedData } from '@/utils/statuses'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

@@ -8,10 +8,6 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Header } from '@/components/layout/header'
 
 // Create a mapping of paths to breadcrumb labels
 const breadcrumbNameMap: Record<string, string> = {

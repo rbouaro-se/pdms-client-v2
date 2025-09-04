@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
 import useDialogState from '@/hooks/use-dialog-state'
-import { User } from '../data/schema'
-import { SystemUser } from '@/types/user'
 import { Dispatcher } from '@/types/dispatcher'
 
 type DispatchersDialogType = 'add' | 'edit'

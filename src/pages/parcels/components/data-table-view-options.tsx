@@ -9,7 +9,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
-import { Parcel } from '@/types/parcel'
 
 interface DataTableViewOptionsProps<Parcel> {
   table: Table<Parcel>

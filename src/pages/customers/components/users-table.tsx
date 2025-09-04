@@ -52,7 +52,7 @@ export function UsersTable({ columns, data }: DataTableProps) {
       sorting,
       columnVisibility,
       rowSelection,
-      columnFilters,
+      columnFilters
     },
     filterFns,
     enableRowSelection: true,

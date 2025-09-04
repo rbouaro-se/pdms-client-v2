@@ -5,31 +5,45 @@ import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { clearAlert } from '@/redux/slices/notification'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import {
-    CheckCircleIcon,
-    InfoIcon,
-    AlertTriangle,
-    FireExtinguisher,
+import {  
+    AlertTriangle,              
+    InfoIcon,           
     X as XIcon,
+    ShieldAlert,
+    CircleCheck,
+    AlertOctagon,         
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { TAlert } from '@/types/alerts'
+import { AlertColor, TAlert } from '@/types/alerts'
 
 const DEFAULT_DURATION = 5000
 
-function getIconForColor(color?: string) {
+// More specific icons for different contexts:
+function getEnhancedIconForColor(color?: string, context?: string) {
+    if (context === 'authentication') {
+        return <ShieldAlert className="h-4 w-4" />
+    }
+
     switch (color) {
         case 'success':
-        case 'green':
-            return <CheckCircleIcon className="h-4 w-4" />
+            return <CircleCheck className="h-4 w-4" />
         case 'warning':
-        case 'yellow':
             return <AlertTriangle className="h-4 w-4" />
         case 'danger':
-        case 'red':
-            return <FireExtinguisher className="h-4 w-4" />
+            return <AlertOctagon className="h-4 w-4" /> // More severe looking
         default:
             return <InfoIcon className="h-4 w-4" />
+    }
+}
+function determineAlertType(color: AlertColor) {
+    switch (color) {
+        case 'success':
+            return 'default'
+        case 'warning':
+        case 'danger':
+            return 'destructive'
+        default:
+            return 'default'
     }
 }
 
@@ -116,28 +130,29 @@ export default function AppAlert() {
 
     if (!alert || !visible) return null
 
-    const icon = getIconForColor(alert.color)
+    const icon = getEnhancedIconForColor(alert.color)
     const title = alert.title ?? (alert.color === 'success' ? 'Success' : 'Notice')
     const message = (alert as any).message ?? ''
 
+
     return (
         <div
-            className="fixed top-4 right-4 z-[9999] w-full max-w-sm"
+            className="fixed top-4 right-4 z-[9999] max-w-md"
             onMouseEnter={pauseTimer}
             onMouseLeave={resumeTimer}
             role="status"
             aria-live="polite"
         >
             <Alert
-                variant="default"
+                variant={determineAlertType(alert.color ?? 'default')}
                 color={alert.color as any}
                 className={cn('flex items-start gap-3 shadow-lg', 'pointer-events-auto')}
             >
                 <div className="flex items-center gap-3 px-2">{icon}</div>
 
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 text-wrap">
                     <AlertTitle className="font-medium">{title}</AlertTitle>
-                    {message ? <AlertDescription className="mt-1">{message}</AlertDescription> : null}
+                    {message ? <AlertDescription className="mt-2">{message}</AlertDescription> : null}
                 </div>
 
                 <div className="flex items-start pr-2">

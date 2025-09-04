@@ -17,11 +17,12 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { useAppDispatch } from '@/redux/store'
 import { useLoginMutation } from '@/api/slices/auth'
-import { IAPIError, IResponse } from '@/types'
+import { IResponse } from '@/types'
 import { SystemUser } from '@/types/user'
 import { setUser } from '@/redux/slices/auth'
-import { notifyError, notifySuccess } from '@/components/custom/notify'
-
+import { notifyError } from '@/components/custom/notify'
+import { Loader2 } from 'lucide-react'
+import { clearAlert } from '@/redux/slices/notification'
 type UserAuthFormProps = HTMLAttributes<HTMLFormElement>
 
 const formSchema = z.object({
@@ -41,7 +42,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   const dispatch = useAppDispatch();
   const [login, { isLoading }] = useLoginMutation();
-
   const from = location.state?.from?.pathname || '/pages/admin';
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -54,44 +54,21 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
        // eslint-disable-next-line no-console
-    console.log(data)
+    dispatch(clearAlert())
 
     try {
-      console.log(data);
-
       const response: IResponse<SystemUser> = await login({ usernameOrEmail: data.email, password: data.password })
 
-      // console.log(response)
-
       if (response.data) {
-
-        console.log(response);
-
         dispatch(setUser({ ...response.data, type: "system" }))
-      
         navigate(from, { replace: true })
       } else {
-        const res = response.error as IAPIError
-        notifyError(dispatch, 'Failed to login. Email or password incorrect')
-        console.log(res);
-        
-
-        // res.data.message && dispatch(setFeedback({
-        //   message: `Authentication failed! ${res.data.errors ? res.data.errors[0] : res.data.message}`,
-        //   title: "Authentication",
-        //   color: "danger"
-        // }))
-
-
+        // const res = response.error as IAPIError
+        notifyError(dispatch,'Unauthorized', 'Failed to login! Email or password incorrect.')
       }
 
     } catch (error) {
-      // dispatch(setFeedback({
-      //   message: "Authentication failed: Unknown error occurred",
-      //   title: "Authentication",
-      //   color: "danger"
-      // }))
-
+      notifyError(dispatch, 'Unauthorized', 'Authentication failed. Please try again later')
     }
   
   }
@@ -127,7 +104,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               </FormControl>
               <FormMessage />
               <Link
-                to='/forgot-password'
+                to='/authentication/forgot-password'
                 className='text-muted-foreground absolute -top-0.5 right-0 text-sm font-medium hover:opacity-75'
               >
                 Forgot password?
@@ -135,8 +112,19 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             </FormItem>
           )}
         />
-        <Button className='mt-2' disabled={isLoading}>
-          Login
+        <Button
+          className="mt-2"
+          disabled={isLoading}
+          type="submit"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Logging in...
+            </>
+          ) : (
+            'Login'
+          )}
         </Button>
 
         <div className='relative my-2'>

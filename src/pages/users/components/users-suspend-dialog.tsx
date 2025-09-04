@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { showSubmittedData } from '@/utils/show-submitted-data'
+import { showSubmittedData } from '@/utils/statuses'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'

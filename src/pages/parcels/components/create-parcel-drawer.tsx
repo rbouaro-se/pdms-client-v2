@@ -84,8 +84,8 @@ export function CreateParcelDrawer({ open, onOpenChange }: Props) {
   });
 
   const { data: branches } = useGetAllBranchesQuery({
-    pageNumber: 0,
-    pageSize: 100,
+    page: 0,
+    size: 100,
   });
 
   const form = useForm<ParcelForm>({
@@ -249,7 +249,7 @@ export function CreateParcelDrawer({ open, onOpenChange }: Props) {
                   <FormItem>
                     <FormLabel>Parcel Type</FormLabel>
                     <SelectDropdown
-                      value={field.value}
+                      defaultValue={field.value}
                       onValueChange={field.onChange}
                       placeholder="Select parcel type"
                       items={[
@@ -270,7 +270,7 @@ export function CreateParcelDrawer({ open, onOpenChange }: Props) {
                   <FormItem>
                     <FormLabel>Delivery Type</FormLabel>
                     <SelectDropdown
-                      value={field.value}
+                      defaultValue={field.value}
                       onValueChange={field.onChange}
                       placeholder="Select delivery type"
                       items={[
@@ -401,7 +401,7 @@ export function CreateParcelDrawer({ open, onOpenChange }: Props) {
                   <FormItem>
                     <FormLabel>Origin Branch</FormLabel>
                     <SelectDropdown
-                      value={field.value}
+                      defaultValue={field.value}
                       onValueChange={(value) => {
                         field.onChange(value);
                         // Revalidate destination when origin changes
@@ -428,7 +428,7 @@ export function CreateParcelDrawer({ open, onOpenChange }: Props) {
                   <FormItem>
                     <FormLabel>Destination Branch</FormLabel>
                     <SelectDropdown
-                      value={field.value}
+                      defaultValue={field.value}
                       onValueChange={(value) => {
                         field.onChange(value);
                         // Revalidate when destination changes
@@ -455,7 +455,7 @@ export function CreateParcelDrawer({ open, onOpenChange }: Props) {
                   <FormItem>
                     <FormLabel>Dispatcher</FormLabel>
                     <SelectDropdown
-                      value={field.value}
+                      defaultValue={field.value}
                       onValueChange={field.onChange}
                       placeholder="Select dispatcher"
                       items={dispatchers?.content.map(dispatcher => ({

@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { showSubmittedData } from '@/utils/show-submitted-data'
+import { showSubmittedData } from '@/utils/statuses'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -25,7 +25,6 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { userTypes } from '../data/data'
-import { User } from '../data/schema'
 import { Customer } from '@/types/user'
 
 const formSchema = z

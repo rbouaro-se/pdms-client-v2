@@ -33,10 +33,6 @@ declare module '@tanstack/react-table' {
     className: string
   }
 
-  // Add global filter function type
-  interface FilterFns {
-    branchGlobalFilter: FilterFn<Branch>
-  }
 }
 
 // Custom global filter function with proper typing - MUST return boolean
@@ -97,7 +93,6 @@ export function BranchesTable({ columns, data }: DataTableProps) {
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    globalFilterFn: 'branchGlobalFilter',
   })
 
   return (

@@ -1,4 +1,3 @@
-import { createApi } from '@reduxjs/toolkit/query/react';
 
 type Location = {
 	longitude: number;

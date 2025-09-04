@@ -1,4 +1,4 @@
-import { showSubmittedData } from '@/utils/show-submitted-data'
+// import { showSubmittedData } from '@/utils/statuses'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { useTasks } from '../context/tasks-context'
 import { TasksImportDialog } from './tasks-import-dialog'
@@ -23,7 +23,7 @@ export function TasksDialogs() {
       {currentRow && (
         <>
           <CreateParcelDrawer
-            key={`task-update-${currentRow.id}`}
+            key={`task-update-${currentRow.parcelId}`}
             open={open === 'update'}
             onOpenChange={() => {
               setOpen('update')
@@ -49,17 +49,17 @@ export function TasksDialogs() {
               setTimeout(() => {
                 setCurrentRow(null)
               }, 500)
-              showSubmittedData(
-                currentRow,
-                'The following task has been deleted:'
-              )
+              // showSubmittedData(
+              //   currentRow,
+              //   'The following task has been deleted:'
+              // )
             }}
             className='max-w-md'
-            title={`Delete this task: ${currentRow.id} ?`}
+            title={`Delete this task: ${currentRow.parcelId} ?`}
             desc={
               <>
                 You are about to delete a task with the ID{' '}
-                <strong>{currentRow.id}</strong>. <br />
+                <strong>{currentRow.parcelId}</strong>. <br />
                 This action cannot be undone.
               </>
             }

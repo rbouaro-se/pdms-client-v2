@@ -5,7 +5,6 @@ import { DataTableColumnHeader } from './data-table-column-header'
 import { DataTableRowActions } from './data-table-row-actions'
 import { CheckCircleIcon, TruckIcon, UndoIcon, WarehouseIcon } from 'lucide-react'
 import { Parcel } from '@/types/parcel'
-import moment from 'moment'
 import { cn } from '@/lib/utils'
 
 export const parcelStatuses = [
@@ -193,7 +192,7 @@ export const columns: ColumnDef<Parcel>[] = [
         </span>
       </div>
     ),
-    filterFn: (row, id, value) => {
+    filterFn: (row, _id, value) => {
       return (
         row.original.recipient.name.toLowerCase().includes(value.toLowerCase()) ||
         row.original.recipient.phoneNumber.toLowerCase().includes(value.toLowerCase())

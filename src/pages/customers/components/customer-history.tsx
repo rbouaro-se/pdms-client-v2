@@ -1,7 +1,5 @@
 'use client'
-
-import { Customer } from '@/types/user'
-import { Parcel, ParcelStatus } from '@/types/parcel'
+import { ParcelStatus } from '@/types/parcel'
 import { Badge } from '@/components/ui/badge'
 import moment from 'moment'
 import {
@@ -55,7 +53,7 @@ export function CustomerParcelHistoryPage() {
     const getStatusBadge = (status: ParcelStatus) => {
         const statusMap = {
             'registered': { label: 'Registered', color: 'bg-blue-500' },
-            'in-transit': { label: 'In Transit', color: 'bg-yellow-500' },
+            'in_transit': { label: 'In Transit', color: 'bg-yellow-500' },
             'delivered': { label: 'Delivered', color: 'bg-green-500' },
             'available_for_pickup': { label: 'Ready for Pickup', color: 'bg-purple-500' },
             'returned': { label: 'Returned', color: 'bg-red-500' }

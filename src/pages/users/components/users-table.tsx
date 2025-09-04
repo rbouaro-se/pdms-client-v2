@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {
   ColumnDef,
   ColumnFiltersState,
+  FilterFn,
   RowData,
   SortingState,
   VisibilityState,
@@ -22,7 +23,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { User } from '../data/schema'
 import { DataTablePagination } from './data-table-pagination'
 import { DataTableToolbar } from './data-table-toolbar'
 import { SystemUser } from '@/types/user'
@@ -32,6 +32,29 @@ declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     className: string
   }
+  
+}
+
+// Custom global filter function with proper typing - MUST return boolean
+const userGlobalFilter: FilterFn<SystemUser> = (row, _columnId, filterValue) => {
+  if (!filterValue) return true
+
+  const value = filterValue.toString().toLowerCase()
+  const user = row.original
+
+  // Search through all relevant fields - ensure we return boolean only
+  return (
+    (user.firstName?.toLowerCase().includes(value) ?? false) ||
+    (user.lastName?.toLowerCase().includes(value) ?? false) ||
+    (user.email?.toLowerCase().includes(value) ?? false) ||
+    (user.username.toLowerCase().includes(value) ?? false) ||
+    (user.id?.toLowerCase().includes(value) ?? false)
+  )
+}
+
+// Define the filter functions object
+const filterFns = {
+  userGlobalFilter,
 }
 
 interface DataTableProps {
@@ -44,6 +67,7 @@ export function UsersTable({ columns, data }: DataTableProps) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [sorting, setSorting] = useState<SortingState>([])
+  const [globalFilter, setGlobalFilter] = useState('')
 
   const table = useReactTable({
     data,
@@ -53,13 +77,16 @@ export function UsersTable({ columns, data }: DataTableProps) {
       columnVisibility,
       rowSelection,
       columnFilters,
+      globalFilter,
     },
+    filterFns,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
+    onGlobalFilterChange: setGlobalFilter,
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),

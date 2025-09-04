@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {  MapPin, Package, Truck, User, Calendar, Info } from "lucide-react";
+import {  MapPin, Package, Truck, User, Calendar } from "lucide-react";
 import { format } from "date-fns";
-import { Parcel } from "@/pages/tracking/data/chat-types";
+import { Parcel } from "@/types/parcel";
 
 interface ParcelCardProps {
     parcel: Parcel;
@@ -15,9 +15,10 @@ export function ParcelCard({ parcel, onTrack }: ParcelCardProps) {
     // Status badge color mapping
     const statusColors = {
         'registered': 'bg-blue-500',
-        'in-transit': 'bg-yellow-500',
+        'in_transit': 'bg-yellow-500',
         'delivered': 'bg-green-500',
-        'failed': 'bg-red-500',
+        'available_for_pickup':'bg-green-200',
+        'returned': 'bg-red-500',
     };
 
     // Delivery type colors
@@ -30,9 +31,10 @@ export function ParcelCard({ parcel, onTrack }: ParcelCardProps) {
     // Calculate progress percentage based on status
     const progressValue = {
         'registered': 25,
-        'in-transit': 60,
+        'in_transit': 60,
         'delivered': 100,
-        'failed': 100,
+        'available_for_pickup':80,
+        'returned': 100,
     }[parcel.status];
 
     return (
@@ -95,14 +97,6 @@ export function ParcelCard({ parcel, onTrack }: ParcelCardProps) {
                         <span>{parcel.recipient.name}</span>
                     </div>
                 </div>
-
-                {/* Special instructions (if any) */}
-                {parcel.specialInstructions && (
-                    <div className="flex items-start space-x-2 text-sm p-2 bg-muted rounded">
-                        <Info className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                        <span>{parcel.specialInstructions}</span>
-                    </div>
-                )}
             </CardContent>
 
             <CardFooter className="flex justify-between">
@@ -113,7 +107,7 @@ export function ParcelCard({ parcel, onTrack }: ParcelCardProps) {
                     variant="outline"
                     size="sm"
                     onClick={() => onTrack?.(parcel.parcelId)}
-                    disabled={parcel.status === 'delivered' || parcel.status === 'failed'}
+                    disabled={parcel.status === 'delivered' || parcel.status === 'returned'}
                 >
                     Track Package
                 </Button>

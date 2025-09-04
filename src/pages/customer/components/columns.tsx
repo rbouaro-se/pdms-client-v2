@@ -112,7 +112,7 @@ export const outgoingColumns: ColumnDef<Parcel>[] = [
         </span>
       </div>
     ),
-    filterFn: (row, id, value) => {
+    filterFn: (row, _id, value) => {
       return (
         row.original.recipient.name.toLowerCase().includes(value.toLowerCase()) ||
         row.original.recipient.phoneNumber.toLowerCase().includes(value.toLowerCase())

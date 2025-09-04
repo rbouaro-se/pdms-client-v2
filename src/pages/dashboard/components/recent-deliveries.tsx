@@ -1,56 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { IconPackage, IconCheck, IconClock, IconTruck } from '@tabler/icons-react'
+import { IconPackage } from '@tabler/icons-react'
 import { useGetRecentDeliveriesQuery } from '@/api/slices/dashboardApiSlice'
 import { Skeleton } from '@/components/ui/skeleton'
-import { FrontendStatus } from '@/types'
 import { formatGhanaianPhoneNumber } from '@/utils'
-
-const statusConfig = {
-  delivered: {
-    icon: IconCheck,
-    variant: 'default' as const,
-    label: 'Delivered'
-  },
-  'in-transit': {
-    icon: IconTruck,
-    variant: 'secondary' as const,
-    label: 'In Transit'
-  },
-  'available_for_pickup': {
-    icon: IconTruck,
-    variant: 'secondary' as const,
-    label: 'Available for Pickup'
-  },
-  'returned': {
-    icon: IconTruck,
-    variant: 'destructive' as const,
-    label: 'Returned'
-  },
-  pending: {
-    icon: IconClock,
-    variant: 'outline' as const,
-    label: 'Pending'
-  }
-}
-
-// Map backend status to frontend status
-const mapBackendStatus = (status: string): FrontendStatus => {
-  switch (status) {
-    case 'delivered':
-      return 'delivered'
-    case 'in-transit':
-      return 'in-transit'
-    case 'registered':
-      return 'pending'
-    case 'available_for_pickup':
-      return 'available_for_pickup'
-    case 'returned':
-      return 'returned'
-    default:
-      return 'pending'
-  }
-}
+import { mapBackendStatus, statusConfig } from '@/utils/statuses'
 
 export function RecentDeliveries() {
   const { data: recentDeliveries, isLoading, error } = useGetRecentDeliveriesQuery()

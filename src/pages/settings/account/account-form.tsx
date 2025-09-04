@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { PasswordInput } from '@/components/password-input';
-import { AppUser, Customer, SystemUser } from '@/types/user';
+import { AppUser } from '@/types/user';
 import { useChangePasswordMutation } from '@/api/slices/auth';
 import { useAppDispatch } from '@/redux/store';
 import { notifySuccess, notifyError } from '@/components/custom/notify';

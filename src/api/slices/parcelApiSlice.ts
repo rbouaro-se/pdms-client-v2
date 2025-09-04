@@ -1,4 +1,4 @@
-import { Page, Pageable } from '@/types';
+import { Page } from '@/types';
 import { CreateParcelRequest, Parcel, ParcelFetchOptions, ParcelStatusChangeRequest, ParcelStatusChangeResponse, ParcelTrackingResponse } from '@/types/parcel';
 import { API } from '../index';
 
@@ -42,13 +42,13 @@ export const parcelApiSlice = API.injectEndpoints({
 
     searchParcels: builder.query<
       Page<Parcel>,
-      { pageable: Pageable; search?: string; filter?: ParcelFetchOptions }
+      { pageable: {page:number, size:number, sort?:string}; search?: string; filter?: ParcelFetchOptions }
     >({
       query: ({ pageable, search, filter }) => ({
         url: `/api/v1/parcels/search`,
         method: 'POST',
         params: { ...pageable, search },
-        body: filter,
+        body: {filter},
       }),
       providesTags: ['Parcel'],
       transformResponse: (response: Page<Parcel>) => {
@@ -100,7 +100,7 @@ export const parcelApiSlice = API.injectEndpoints({
       Page<Parcel>,
       {
         customerId: string
-        pageable: { size: number; page: number }
+        pageable: { size: number; page: number; sort?:string }
       }
     >({
       query: ({ customerId, pageable }) => ({

@@ -1,8 +1,3 @@
-// schemas/configuration.ts
-import { z } from "zod";
-import { Customer } from "./user";
-
-
 export interface Location {
   longitude: number
   latitude: number
@@ -117,7 +112,7 @@ export interface Dispatcher {
   available: boolean
 }
 
-export type ParcelStatus = 'registered' | 'in-transit' | 'delivered' | 'available_for_pickup'|'returned'
+export type ParcelStatus = 'registered' | 'in_transit' | 'delivered' | 'available_for_pickup'|'returned'
 export type DeliveryType = 'standard' | 'express' | 'regular' | 'same_day'
 export type ParcelType =
   | 'clothing'

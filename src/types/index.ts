@@ -1,9 +1,10 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import React, { Dispatch, SetStateAction } from 'react'
-import { ColorPaletteProp } from '@mui/joy/styles'
-import { SerializedError } from '@reduxjs/toolkit'
-import { FetchBaseQueryError } from '@reduxjs/toolkit/query'
-import { TAccountType } from './account'
+import React, { Dispatch, SetStateAction } from 'react';
+import { ColorPaletteProp } from '@mui/joy/styles';
+import { SerializedError } from '@reduxjs/toolkit';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { TAccountType } from './account';
+
 
 export interface inputProps {
   name: string
@@ -267,4 +268,15 @@ export const statusMapping = {
   RETURNED: 'pending',
 } as const
 
-export type FrontendStatus = 'delivered' | 'in-transit' | 'pending' | 'available_for_pickup' | 'returned'
+export type FrontendStatus =
+  | 'delivered'
+  | 'in-transit'
+  | 'pending'
+  | 'available_for_pickup'
+  | 'returned'
+
+export interface CustomerRequest {
+  name: string
+  email: string
+  phoneNumber: string
+}

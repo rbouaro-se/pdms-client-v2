@@ -1,7 +1,8 @@
 // api/slices/customerApiSlice.ts
-import { Customer } from '@/types/user'
-import { API } from '../index'
-import { Page, Pageable } from '@/types'
+import { CustomerRequest, Page, Pageable } from '@/types';
+import { Customer } from '@/types/user';
+import { API } from '../index';
+
 
 export const customerApiSlice = API.injectEndpoints({
   endpoints: (builder) => ({
@@ -10,7 +11,7 @@ export const customerApiSlice = API.injectEndpoints({
         url: '/api/v1/customers',
         params: {
           page: pageable.pageNumber,
-          size: pageable.pageSize
+          size: pageable.pageSize,
         },
       }),
       providesTags: ['Customer'],
@@ -28,7 +29,7 @@ export const customerApiSlice = API.injectEndpoints({
         method: 'POST',
         params: {
           page: pageable.pageNumber,
-          size: pageable.pageSize
+          size: pageable.pageSize,
         },
         body: { searchTerm },
       }),
@@ -40,6 +41,41 @@ export const customerApiSlice = API.injectEndpoints({
         { type: 'Customer', id: customerId },
       ],
     }),
+
+    // Add the update customer mutation
+    updateCustomer: builder.mutation<
+      Customer,
+      { customerId: string; payload: CustomerRequest }
+    >({
+      query: ({ customerId, payload }) => ({
+        url: `/api/v1/customers/${customerId}`,
+        method: 'PUT',
+        body: payload,
+      }),
+     
+      invalidatesTags: (_result, _error, { customerId }) => [
+        { type: 'Customer', id: customerId },
+        'Customer',
+      ],
+
+      async onQueryStarted(
+        { customerId },
+        { dispatch, queryFulfilled }
+      ) {
+    
+        try {
+          await queryFulfilled
+          
+          dispatch(
+            customerApiSlice.util.invalidateTags([
+              { type: 'Customer', id: customerId },
+            ])
+          )
+        } catch (error) {
+          // Handle error if needed
+        }
+      },
+    }),
   }),
 })
 
@@ -48,4 +84,5 @@ export const {
   useLazyGetCustomersQuery,
   useSearchCustomersMutation,
   useGetCustomerByIdQuery,
-} = customerApiSlice
+  useUpdateCustomerMutation,
+} = customerApiSlice;

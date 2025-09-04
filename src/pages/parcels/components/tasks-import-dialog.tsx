@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { showSubmittedData } from '@/utils/show-submitted-data'
+// import { showSubmittedData } from '@/utils/statuses'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -51,12 +51,12 @@ export function TasksImportDialog({ open, onOpenChange }: Props) {
     const file = form.getValues('file')
 
     if (file && file[0]) {
-      const fileDetails = {
-        name: file[0].name,
-        size: file[0].size,
-        type: file[0].type,
-      }
-      showSubmittedData(fileDetails, 'You have imported the following file:')
+      // const fileDetails = {
+      //   name: file[0].name,
+      //   size: file[0].size,
+      //   type: file[0].type,
+      // }
+      // showSubmittedData(fileDetails, 'You have imported the following file:')
     }
     onOpenChange(false)
   }

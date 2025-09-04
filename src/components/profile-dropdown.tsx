@@ -11,11 +11,10 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { AppUser } from '@/types/user'
 import { useLogoutMutation } from '@/api/slices/auth'
+import { useAppSelector } from '@/redux/store'
 
 interface ProfileDropdownProps {
-  user?: AppUser | null
   logoutRedirectUrl: string
   profilePageUrl: string
   settingPageUrl: string
@@ -23,30 +22,18 @@ interface ProfileDropdownProps {
 }
 
 export function ProfileDropdown({
-  user,
   ...props
 }: ProfileDropdownProps) {
 
+  const { user } = useAppSelector(state => state.auth)
+
   const navigate = useNavigate();
-
-
-  // const handleLogout = async () => {
-  //   if (onLogout) {
-  //     try {
-  //       await onLogout();
-  //     } catch (error) {
-  //       console.error("Logout failed:", error);
-
-  //     }
-  //   }
-
-  // }
 
   const [logout] = useLogoutMutation();
 
   const handleLogout = async () => {
     try {
-      await logout({});
+      await logout();
       navigate(props.logoutRedirectUrl, { replace: true });
     } catch (error) {
       console.error('Logout failed:', error);

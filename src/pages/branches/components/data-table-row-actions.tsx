@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { Row } from '@tanstack/react-table'
-import { IconEdit, IconTrash } from '@tabler/icons-react'
+import { IconEdit } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -11,8 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useBranches } from '../context/branches-context'
-import { Archive, Eye, TrashIcon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Archive, TrashIcon } from 'lucide-react'
 import { Branch } from '@/types/parcel'
 
 interface DataTableRowActionsProps {
@@ -22,7 +21,6 @@ interface DataTableRowActionsProps {
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useBranches()
 
-  const navigate = useNavigate();
   return (
     <>
       <DropdownMenu modal={false}>

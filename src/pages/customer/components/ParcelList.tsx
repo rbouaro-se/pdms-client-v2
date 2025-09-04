@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search } from "lucide-react";
 import { ParcelCard } from "./ParcelCard";
-import { Parcel } from "@/pages/tracking/data/chat-types";
+import { Parcel } from "@/types/parcel";
 
 interface ParcelListProps {
     parcels: Parcel[];
@@ -12,9 +12,9 @@ interface ParcelListProps {
 export function ParcelList({ parcels, onTrackParcel }: ParcelListProps) {
     // Filter parcels by status for the tabs
     const registeredParcels = parcels.filter(p => p.status === 'registered');
-    const inTransitParcels = parcels.filter(p => p.status === 'in-transit');
+    const inTransitParcels = parcels.filter(p => p.status === 'in_transit');
     const deliveredParcels = parcels.filter(p => p.status === 'delivered');
-    const failedParcels = parcels.filter(p => p.status === 'failed');
+    const failedParcels = parcels.filter(p => p.status === 'returned');
 
     return (
         <div className="space-y-4">

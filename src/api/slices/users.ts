@@ -65,7 +65,7 @@ export const userApiSlice = API.injectEndpoints({
     searchUsers: builder.mutation<
       Page<SystemUser>,
       {
-        pageable?: Pageable
+        pageable?: {size:number, page:number}
         search?: string
         filter?: UserFetchOptions
       }

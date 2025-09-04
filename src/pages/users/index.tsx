@@ -8,16 +8,11 @@ import { UsersDialogs } from './components/users-dialogs'
 import { UsersPrimaryButtons } from './components/users-primary-buttons'
 import { UsersTable } from './components/users-table'
 import UsersProvider from './context/users-context'
-import { getValidMockUsers }  from './data/users'
 import { useGetAllUsersQuery } from '@/api/slices/users'
-import { SystemUser } from '@/types/user'
-import { useState } from 'react'
 
 export default function Users() {
-
-  const [userList, setUserList] = useState<SystemUser[]>([])
  
-  const { data, isLoading, isError, error } = useGetAllUsersQuery({
+  const { data } = useGetAllUsersQuery({
     pageNumber: 0,
     pageSize: 20,
     sort: []
