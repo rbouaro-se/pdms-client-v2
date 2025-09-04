@@ -2,17 +2,17 @@ import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, Cart
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useGetMonthlyParcelStatsQuery } from '@/api/slices/dashboardApiSlice'
 import { Skeleton } from '@/components/ui/skeleton'
-import { MonthlyParcelStats } from '@/types'
+// import { MonthlyParcelStats } from '@/types'
 
 // Fallback data in case API is not available
-const fallbackData: MonthlyParcelStats[] = [
-  { month: 'Jan', total: 245, registered: 30, inTransit: 35, availableForPickup: 15, delivered: 150, returned: 15 },
-  { month: 'Feb', total: 312, registered: 40, inTransit: 45, availableForPickup: 20, delivered: 190, returned: 17 },
-  { month: 'Mar', total: 278, registered: 35, inTransit: 40, availableForPickup: 18, delivered: 170, returned: 15 },
-  { month: 'Apr', total: 356, registered: 45, inTransit: 50, availableForPickup: 25, delivered: 220, returned: 16 },
-  { month: 'May', total: 298, registered: 38, inTransit: 42, availableForPickup: 20, delivered: 180, returned: 18 },
-  { month: 'Jun', total: 334, registered: 42, inTransit: 48, availableForPickup: 22, delivered: 205, returned: 17 },
-]
+// const fallbackData: MonthlyParcelStats[] = [
+//   { month: 'Jan', total: 245, registered: 30, inTransit: 35, availableForPickup: 15, delivered: 150, returned: 15 },
+//   { month: 'Feb', total: 312, registered: 40, inTransit: 45, availableForPickup: 20, delivered: 190, returned: 17 },
+//   { month: 'Mar', total: 278, registered: 35, inTransit: 40, availableForPickup: 18, delivered: 170, returned: 15 },
+//   { month: 'Apr', total: 356, registered: 45, inTransit: 50, availableForPickup: 25, delivered: 220, returned: 16 },
+//   { month: 'May', total: 298, registered: 38, inTransit: 42, availableForPickup: 20, delivered: 180, returned: 18 },
+//   { month: 'Jun', total: 334, registered: 42, inTransit: 48, availableForPickup: 22, delivered: 205, returned: 17 },
+// ]
 
 // Custom tooltip component
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -37,7 +37,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export function Overview() {
   const { data: monthlyStats, isLoading, error } = useGetMonthlyParcelStatsQuery()
 
-  const chartData = monthlyStats && monthlyStats.length > 0 ? monthlyStats : fallbackData
+  // const chartData = monthlyStats && monthlyStats.length > 0 ? monthlyStats : fallbackData
+  const chartData = monthlyStats ?? []
 
   if (isLoading) {
     return (
