@@ -10,6 +10,7 @@ import { NavGroup } from '@/components/layout/nav-group'
 import { filterNavGroupsByRole, navGroups } from './data/sidebar-data'
 import { ChevronsUpDown } from 'lucide-react'
 import { useAppSelector } from '@/redux/store'
+import { NavUser } from './nav-user'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
@@ -41,7 +42,12 @@ const { user } = useAppSelector(state => state.auth)
         ))}
       </SidebarContent>
       <SidebarFooter>
-        {/* <NavUser user={sidebarData.user} /> */}
+        {
+          user && user?.type === 'system' && (
+            <NavUser user={user} />
+          )
+        }
+       
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

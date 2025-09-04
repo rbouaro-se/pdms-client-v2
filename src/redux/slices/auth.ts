@@ -1,18 +1,21 @@
 import { AppUser } from "@/types/user";
 import { createSlice } from "@reduxjs/toolkit";
 
+
 const initialState: {
-	user: AppUser | null;
-	passwordReset: {
-		mustConfirm: boolean;
-		expiresAt: Date;
-	} | null;
+  user: AppUser | null
+  isLoading: boolean
+  passwordReset: {
+    mustConfirm: boolean
+    expiresAt: Date
+  } | null
 } = {
-	user: null,
-	passwordReset: localStorage.getItem("passwordReset")
-		? JSON.parse(localStorage.getItem("passwordReset") || "")
-		: null,
-};
+  user: null,
+  isLoading: true,
+  passwordReset: localStorage.getItem('passwordReset')
+    ? JSON.parse(localStorage.getItem('passwordReset') || '')
+    : null,
+}
 
 const authSlice = createSlice({
 	name: "auth",

@@ -3,13 +3,11 @@ import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import auth from "./slices/auth";
 import registration from "./slices/registration";
-import job from "./slices/job";
 import notification from "./slices/notification";
 export const store = configureStore({
 	reducer: {
 		auth,
 		registration,
-		job,
 		notification,
 		[API.reducerPath]: API.reducer,
 	},

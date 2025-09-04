@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { Outlet,  useLocation } from "react-router-dom";
-import { useAppSelector } from "@/redux/store";
+import { Outlet,  useLocation, useNavigate } from "react-router-dom";
+// import { useAppSelector } from "@/redux/store";
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { TopNav } from '@/components/layout/top-nav';
 import { ProfileDropdown } from '@/components/profile-dropdown';
 import { ThemeSwitch } from '@/components/theme-switch';
 import { SidebarProvider } from "../ui/sidebar";
+import AppAlert from "../custom/AppAlert";
 
 interface NavItem {
     title: string;
@@ -47,6 +48,8 @@ const Header = ({
 }: HeaderProps) => {
     const [offset, setOffset] = useState(0);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         const onScroll = () => {
             setOffset(document.body.scrollTop || document.documentElement.scrollTop);
@@ -66,7 +69,7 @@ const Header = ({
             )}
             {...props}
         >
-            <div className='grid flex-1 text-left text-sm leading-tight'>
+            <div className='grid flex-1 text-left text-sm leading-tight cursor-pointer' onClick={()=>navigate("/pages/customer")}>
                 <span className='truncate font-semibold'>PDMS</span>
                 <span className='truncate text-xs'>Delivery Express</span>
             </div>
@@ -78,7 +81,7 @@ const Header = ({
 
 const AppNavLayout = () => {
     const location = useLocation();
-    const { user } = useAppSelector(state => state.auth);
+    // const { user } = useAppSelector(state => state.auth);
     // const navigate = useNavigate();
 
     const enhancedNavItems = useMemo(() => {
@@ -104,7 +107,7 @@ const AppNavLayout = () => {
                 <TopNav links={enhancedNavItems} />
                 <div className='ml-auto flex items-center space-x-4'>
                     <ThemeSwitch />
-                    <ProfileDropdown user={user}
+                    <ProfileDropdown
                         logoutRedirectUrl='/authentication/phone-login'
                         profilePageUrl='/pages/customer/settings/profile'
                         settingPageUrl='/pages/customer/settings'
@@ -114,7 +117,7 @@ const AppNavLayout = () => {
             <SidebarProvider>
                 <Outlet />
             </SidebarProvider>
-            
+            <AppAlert />
         </>
     );
 };

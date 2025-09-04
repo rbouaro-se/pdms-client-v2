@@ -18,7 +18,7 @@ enum PopularPlanType {
 interface PricingProps {
   title: string;
   popular: PopularPlanType;
-  price: number;
+  price: string;
   description: string;
   buttonText: string;
   benefitList: string[];
@@ -26,48 +26,63 @@ interface PricingProps {
 
 const pricingList: PricingProps[] = [
   {
-    title: "Free",
-    popular: 0,
-    price: 0,
+    title: "Standard Delivery",
+    popular: PopularPlanType.NO,
+    price: "₵20",
     description:
-      "Lorem ipsum dolor sit, amet ipsum consectetur adipisicing elit.",
-    buttonText: "Get Started",
+      "Reliable delivery within 12 hours. Perfect for everyday parcels and business needs.",
+    buttonText: "Choose Standard",
     benefitList: [
-      "1 Team member",
-      "2 GB Storage",
-      "Upto 4 pages",
-      "Community support",
-      "lorem ipsum dolor",
+      "Up to 10kg",
+      "12 hour delivery",
+      "Real-time tracking",
+      "Door-to-door service",
+      "Basic support",
     ],
   },
   {
-    title: "Premium",
-    popular: 1,
-    price: 5,
+    title: "Regular Delivery",
+    popular: PopularPlanType.NO,
+    price: "₵15",
     description:
-      "Lorem ipsum dolor sit, amet ipsum consectetur adipisicing elit.",
-    buttonText: "Start Free Trial",
+      "Affordable option for non-urgent deliveries. Delivered within 48 hours.",
+    buttonText: "Choose Regular",
     benefitList: [
-      "4 Team member",
-      "4 GB Storage",
-      "Upto 6 pages",
-      "Priority support",
-      "lorem ipsum dolor",
+      "Up to 20kg",
+      "48 hour delivery",
+      "Real-time tracking",
+      "Door-to-door service",
+      "Basic support",
     ],
   },
   {
-    title: "Enterprise",
-    popular: 0,
-    price: 40,
+    title: "Same-Day Delivery",
+    popular: PopularPlanType.YES,
+    price: "₵35",
     description:
-      "Lorem ipsum dolor sit, amet ipsum consectetur adipisicing elit.",
-    buttonText: "Contact US",
+      "Guaranteed delivery within the same day (24hrs). For urgent parcels and documents.",
+    buttonText: "Choose Same-Day",
     benefitList: [
-      "10 Team member",
-      "8 GB Storage",
-      "Upto 10 pages",
+      "Up to 5kg",
+      "Delivery within 24 hours",
       "Priority support",
-      "lorem ipsum dolor",
+      "Real-time tracking",
+      "Insurance included",
+    ],
+  },
+  {
+    title: "Express Delivery",
+    popular: PopularPlanType.NO,
+    price: "₵50",
+    description:
+      "Fastest delivery option. Get your parcel delivered within 6-8 hours.",
+    buttonText: "Choose Express",
+    benefitList: [
+      "Up to 5kg",
+      "Delivery within 6-8 hours",
+      "Priority support",
+      "Real-time tracking",
+      "Insurance included",
     ],
   },
 ];
@@ -79,18 +94,16 @@ export const Pricing = () => {
       className="container py-24 sm:py-32"
     >
       <h2 className="text-3xl md:text-4xl font-bold text-center">
-        Get
+        Delivery
         <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
-          {" "}
-          Unlimited{" "}
+          {" "} Pricing {" "}
         </span>
-        Access
+        Plans
       </h2>
       <h3 className="text-xl text-center text-muted-foreground pt-4 pb-8">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias
-        reiciendis.
+        Choose the best delivery option for your needs. Fast, secure, and affordable for everyone.
       </h3>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
         {pricingList.map((pricing: PricingProps) => (
           <Card
             key={pricing.title}
@@ -113,10 +126,9 @@ export const Pricing = () => {
                 ) : null}
               </CardTitle>
               <div>
-                <span className="text-3xl font-bold">${pricing.price}</span>
-                <span className="text-muted-foreground"> /month</span>
+                <span className="text-3xl font-bold">{pricing.price}</span>
+                <span className="text-muted-foreground"> /parcel</span>
               </div>
-
               <CardDescription>{pricing.description}</CardDescription>
             </CardHeader>
 

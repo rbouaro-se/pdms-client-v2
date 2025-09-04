@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search } from "lucide-react";
 import { ParcelCard } from "./ParcelCard";
-import { Parcel } from "@/pages/tracking/data/chat-types";
+import { Parcel } from "@/types/parcel";
 
 interface ParcelListProps {
     parcels: Parcel[];
@@ -12,9 +12,10 @@ interface ParcelListProps {
 export function ParcelList({ parcels, onTrackParcel }: ParcelListProps) {
     // Filter parcels by status for the tabs
     const registeredParcels = parcels.filter(p => p.status === 'registered');
-    const inTransitParcels = parcels.filter(p => p.status === 'in-transit');
+    const inTransitParcels = parcels.filter(p => p.status === 'in_transit');
     const deliveredParcels = parcels.filter(p => p.status === 'delivered');
-    const failedParcels = parcels.filter(p => p.status === 'failed');
+    const availableForPickupParcels = parcels.filter(p => p.status === 'available_for_pickup');
+    const failedParcels = parcels.filter(p => p.status === 'returned');
 
     return (
         <div className="space-y-4">
@@ -32,9 +33,10 @@ export function ParcelList({ parcels, onTrackParcel }: ParcelListProps) {
                 <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="all">All ({parcels.length})</TabsTrigger>
                     <TabsTrigger value="registered">Registered ({registeredParcels.length})</TabsTrigger>
-                    <TabsTrigger value="in-transit">In Transit ({inTransitParcels.length})</TabsTrigger>
+                    <TabsTrigger value="in_transit">In Transit ({inTransitParcels.length})</TabsTrigger>
+                    <TabsTrigger value="available_for_pickup">Returned ({availableForPickupParcels.length})</TabsTrigger>
                     <TabsTrigger value="delivered">Delivered ({deliveredParcels.length})</TabsTrigger>
-                    <TabsTrigger value="failed">Failed ({failedParcels.length})</TabsTrigger>
+                    <TabsTrigger value="failed">Returned ({failedParcels.length})</TabsTrigger>
                 </TabsList>
 
                 {/* All parcels */}
@@ -66,6 +68,19 @@ export function ParcelList({ parcels, onTrackParcel }: ParcelListProps) {
                 <TabsContent value="in-transit">
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                         {inTransitParcels.map(parcel => (
+                            <ParcelCard
+                                key={parcel.parcelId}
+                                parcel={parcel}
+                                onTrack={onTrackParcel}
+                            />
+                        ))}
+                    </div>
+                </TabsContent>
+
+    
+                <TabsContent value="available_for_pickup">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {availableForPickupParcels.map(parcel => (
                             <ParcelCard
                                 key={parcel.parcelId}
                                 parcel={parcel}

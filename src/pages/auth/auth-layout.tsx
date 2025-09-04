@@ -1,3 +1,5 @@
+import AppAlert from "@/components/custom/AppAlert"
+
 interface Props {
   children: React.ReactNode
 }
@@ -22,6 +24,7 @@ export default function AuthLayout({ children }: Props) {
           <h1 className='text-xl font-medium'>Delivery Express</h1>
         </div>
         {children}
+        <AppAlert />
       </div>
     </div>
   )

@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import useDialogState from '@/hooks/use-dialog-state'
-import { User } from '../data/schema'
+import { SystemUser } from '@/types/user'
 
-type UsersDialogType = 'invite' | 'add' | 'edit' | 'delete'
+type UsersDialogType = 'invite' | 'add' | 'edit' | 'reinstate'| 'suspend'
 
 interface UsersContextType {
   open: UsersDialogType | null
   setOpen: (str: UsersDialogType | null) => void
-  currentRow: User | null
-  setCurrentRow: React.Dispatch<React.SetStateAction<User | null>>
+  currentRow: SystemUser | null
+  setCurrentRow: React.Dispatch<React.SetStateAction<SystemUser | null>>
 }
 
 const UsersContext = React.createContext<UsersContextType | null>(null)
@@ -19,7 +19,7 @@ interface Props {
 
 export default function UsersProvider({ children }: Props) {
   const [open, setOpen] = useDialogState<UsersDialogType>(null)
-  const [currentRow, setCurrentRow] = useState<User | null>(null)
+  const [currentRow, setCurrentRow] = useState<SystemUser | null>(null)
 
   return (
     <UsersContext value={{ open, setOpen, currentRow, setCurrentRow }}>

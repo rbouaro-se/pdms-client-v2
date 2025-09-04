@@ -6,7 +6,7 @@ import {
     Pin,
     useMap
 } from '@vis.gl/react-google-maps';
-import Van from '@/assets/van.png'
+import {  Dot } from 'lucide-react';
 interface Location {
     lat: number;
     lng: number;
@@ -125,9 +125,11 @@ const RouteMapContent = ({ origin, destination }: RouteMapProps) => {
          
             {truckPosition && (
                 <AdvancedMarker position={truckPosition} title="Delivery Truck">
-                    <div style={{ transform: 'rotate(90deg)', transition: 'transform 0.3s ease-out' }}>
+                    {/* <div style={{ transform: 'rotate(90deg)', transition: 'transform 0.3s ease-out' }}>
                         <img src={Van} width="32" height="32" alt="Delivery Van" />
-                    </div>
+                    </div> */}
+
+                    <Dot size={80} style={{ transition: 'transform 0.3s ease-out' }} color='#ca4912' strokeWidth={3}/>
                 </AdvancedMarker>
             )}
         </>

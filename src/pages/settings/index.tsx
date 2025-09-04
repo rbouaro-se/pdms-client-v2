@@ -60,7 +60,7 @@ export default function Settings({
   children,
 }: SettingsProps) {
   return (
-    <Main fixed className='container'>
+    <Main  className='container'>
       <div className='space-y-0.5'>
         <h1 className='text-2xl font-bold tracking-tight md:text-3xl'>
           {title}

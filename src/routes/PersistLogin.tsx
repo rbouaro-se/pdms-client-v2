@@ -14,7 +14,7 @@ export default function PersistLogin({
   useEffect(() => {
       const loadSystemUserProfile = async () => {
         try {
-          await getSystemUserProfile({});
+          await getSystemUserProfile();
         } catch (err) {
           console.error(err);
         }
