@@ -1,8 +1,6 @@
 import { z } from 'zod'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { cn } from '@/lib/utils'
-import { showSubmittedData } from '@/utils/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -14,164 +12,320 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { Link } from 'react-router-dom'
-
-const profileFormSchema = z.object({
+import { Card, CardContent } from '@/components/ui/card'
+import { SystemUser, Customer } from '@/types/user'
+import { useAppSelector, useAppDispatch } from '@/redux/store'
+import { useUpdateSystemUserMutation } from '@/api/slices/users'
+import { notifySuccess, notifyError } from '@/components/custom/notify'
+// Add this import at the top with other imports
+import { useUpdateCustomerMutation } from '@/api/slices/customerApiSlice'
+import { setUser } from '@/redux/slices/auth'
+// Schema for System User (Admin/Staff)
+const systemUserSchema = z.object({
   username: z
-    .string('Please enter your username.')
+    .string()
     .min(2, 'Username must be at least 2 characters.')
     .max(30, 'Username must not be longer than 30 characters.'),
-  email: z.email({
-    error: (iss) =>
-      iss.input === undefined
-        ? 'Please select an email to display.'
-        : undefined,
-  }),
-  bio: z.string().max(160).min(4),
-  urls: z
-    .array(
-      z.object({
-        value: z.url('Please enter a valid URL.'),
-      })
-    )
-    .optional(),
+  email: z.string().email('Please enter a valid email address.'),
+  firstName: z
+    .string()
+    .min(1, 'First name is required.')
+    .max(50, 'First name must not be longer than 50 characters.'),
+  lastName: z
+    .string()
+    .min(1, 'Last name is required.')
+    .max(50, 'Last name must not be longer than 50 characters.'),
+  phoneNumber: z.string().optional(),
 })
 
-type ProfileFormValues = z.infer<typeof profileFormSchema>
+// Schema for Customer
+const customerSchema = z.object({
+  name: z
+    .string()
+    .min(2, 'Name must be at least 2 characters.')
+    .max(50, 'Name must not be longer than 50 characters.'),
+  email: z.string()
+    .min(1, 'Email is required.')
+    .email('Please enter a valid email address.'),
+  phoneNumber: z.string()
+    .min(1, 'Phone number is required.')
+    .regex(/^\+?\d{10,15}$/, 'Please enter a valid phone number (10-15 digits, optional + prefix).')
+})
 
-// This can come from your database or API.
-const defaultValues: Partial<ProfileFormValues> = {
-  bio: 'I own a computer.',
-  urls: [
-    { value: 'https://shadcn.com' },
-    { value: 'http://twitter.com/shadcn' },
-  ],
-}
+type SystemUserFormValues = z.infer<typeof systemUserSchema>
+type CustomerFormValues = z.infer<typeof customerSchema>
 
 export default function ProfileForm() {
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileFormSchema),
-    defaultValues,
+  const { user } = useAppSelector(state => state.auth)
+
+  if (!user) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <p className="text-muted-foreground">Please log in to view your profile.</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {user.type === 'system' ? (
+        <SystemUserProfileForm user={user} />
+      ) : (
+        <CustomerProfileForm user={user} />
+      )}
+    </div>
+  )
+}
+
+function SystemUserProfileForm({ user }: { user: SystemUser }) {
+  const dispatch = useAppDispatch()
+  const [updateUser, { isLoading }] = useUpdateSystemUserMutation()
+
+  const form = useForm<SystemUserFormValues>({
+    resolver: zodResolver(systemUserSchema),
+    defaultValues: {
+      username: user.username || '',
+      email: user.email || '',
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      phoneNumber:  '',
+    },
     mode: 'onChange',
   })
 
-  const { fields, append } = useFieldArray({
-    name: 'urls',
-    control: form.control,
-  })
+  const onSubmit = async (data: SystemUserFormValues) => {
+    try {
+      await updateUser({
+        userId: user.id,
+        payload: {
+          username: data.username,
+          email: data.email,
+          firstName: data.firstName,
+          lastName: data.lastName,
+        }
+      }).unwrap()
+
+      notifySuccess(dispatch, 'Profile Updated', 'Your profile has been updated successfully!')
+    } catch (error: any) {
+      console.error('Failed to update profile:', error)
+      const message = error?.data?.message || 'Failed to update profile. Please try again.'
+      notifyError(dispatch, 'Update Failed', message)
+    }
+  }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((data) => showSubmittedData(data))}
-        className='space-y-8'
-      >
-        <FormField
-          control={form.control}
-          name='username'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input placeholder='shadcn' {...field} />
-              </FormControl>
-              <FormDescription>
-                This is your public display name. It can be your real name or a
-                pseudonym. You can only change this once every 30 days.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='email'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder='Select a verified email to display' />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value='m@example.com'>m@example.com</SelectItem>
-                  <SelectItem value='m@google.com'>m@google.com</SelectItem>
-                  <SelectItem value='m@support.com'>m@support.com</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                You can manage verified email addresses in your{' '}
-                <Link to='/'>email settings</Link>.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='bio'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Bio</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder='Tell us a little bit about yourself'
-                  className='resize-none'
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                You can <span>@mention</span> other users and organizations to
-                link to them.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div>
-          {fields.map((field, index) => (
-            <FormField
-              control={form.control}
-              key={field.id}
-              name={`urls.${index}.value`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className={cn(index !== 0 && 'sr-only')}>
-                    URLs
-                  </FormLabel>
-                  <FormDescription className={cn(index !== 0 && 'sr-only')}>
-                    Add links to your website, blog, or social media profiles.
-                  </FormDescription>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
-          <Button
-            type='button'
-            variant='outline'
-            size='sm'
-            className='mt-2'
-            onClick={() => append({ value: '' })}
-          >
-            Add URL
-          </Button>
-        </div>
-        <Button type='submit'>Update profile</Button>
-      </form>
-    </Form>
+    <Card>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-3">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your first name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your last name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your username" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      This is your unique identifier in the system.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Enter your email address"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      This email will be used for system notifications and communications.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="tel"
+                        placeholder="Enter your phone number"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="flex justify-end">
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? 'Updating...' : 'Update Profile'}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  )
+}
+
+function CustomerProfileForm({ user }: { user: Customer }) {
+  const dispatch = useAppDispatch()
+  const [updateCustomer, { isLoading }] = useUpdateCustomerMutation()
+
+  const form = useForm<CustomerFormValues>({
+    resolver: zodResolver(customerSchema),
+    defaultValues: {
+      name: user.name || '',
+      email: user.email || '',
+      phoneNumber: user.phoneNumber || ''
+    },
+    mode: 'onChange',
+  })
+
+  const onSubmit = async (data: CustomerFormValues) => {
+    try {
+      const cus = await updateCustomer({
+        customerId: user.id, // Use user.id as the customer ID
+        payload: {
+          name: data.name,
+          email: data.email,
+          phoneNumber: data.phoneNumber
+        }
+      }).unwrap()
+
+      dispatch(setUser({ ...user, email: cus.email, name: cus.name, phoneNumber:cus.phoneNumber}))
+
+      notifySuccess(dispatch, 'Profile Updated', 'Your profile has been updated successfully!')
+    } catch (error: any) {
+      console.error('Failed to update profile:', error)
+      const message = error?.data?.message || 'Failed to update profile. Please try again.'
+      notifyError(dispatch, 'Update Failed', message)
+    }
+  }
+
+  return (
+    <Card>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-3">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your full name" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      This is the name that will be used for deliveries and communications.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Enter your email address"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      We'll send delivery updates and receipts to this email.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="tel"
+                        placeholder="Enter your phone number"
+                        {...field}
+                        disabled
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      This number will be used for delivery notifications and contact.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex justify-end">
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? 'Updating...' : 'Update Profile'}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   )
 }

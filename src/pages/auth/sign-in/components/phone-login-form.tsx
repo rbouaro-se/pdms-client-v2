@@ -144,7 +144,7 @@ const PhoneLoginForm = ({ className, ...props }: UserAuthFormProps) => {
 
     const handleLogout = async () => {
         try {
-            await logout({});
+            await logout();
             navigate('/login', { replace: true });
         } catch (error) {
             console.error('Logout failed:', error);

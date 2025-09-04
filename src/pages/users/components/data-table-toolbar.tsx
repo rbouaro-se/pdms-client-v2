@@ -25,6 +25,7 @@ export function DataTableToolbar<TData>({
           }
           onChange={(event) =>
             table.getColumn('username')?.setFilterValue(event.target.value)
+            
           }
           className='h-8 w-[150px] lg:w-[250px]'
         />
