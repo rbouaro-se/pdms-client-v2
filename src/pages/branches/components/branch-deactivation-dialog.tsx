@@ -12,6 +12,8 @@ import {
   useArchiveBranchMutation,
   useUnarchiveBranchMutation,
 } from '@/api/slices/branchApiSlice'
+import { useDispatch } from 'react-redux'
+import { notifyError, notifySuccess } from '@/components/custom/notify'
 
 interface Props {
   open: boolean
@@ -23,6 +25,8 @@ export function BranchDeactivateDialog({ open, onOpenChange, currentRow }: Props
   const [value, setValue] = useState('')
   const [archiveBranch, { isLoading: isArchiving }] = useArchiveBranchMutation()
   const [unarchiveBranch, { isLoading: isUnarchiving }] = useUnarchiveBranchMutation()
+
+  const dispatch = useDispatch();
 
   // If branch isActive === true -> we're confirming deactivation (archive)
   // If branch isActive === false -> we're confirming activation (unarchive)
@@ -36,9 +40,12 @@ export function BranchDeactivateDialog({ open, onOpenChange, currentRow }: Props
       if (isDeactivating) {
         await archiveBranch(currentRow.branchId).unwrap()
         showSubmittedData(currentRow, 'The following branch has been deactivated:')
+        notifySuccess(dispatch, 'Branch Status', 'Branch has been deactivated')
+       
       } else {
         await unarchiveBranch(currentRow.branchId).unwrap()
         showSubmittedData(currentRow, 'The following branch has been reactivated:')
+        notifySuccess(dispatch, 'Branch Status', 'Branch has been reactivated ')
       }
 
       setValue('')
@@ -47,7 +54,8 @@ export function BranchDeactivateDialog({ open, onOpenChange, currentRow }: Props
       console.error('Failed to toggle branch active state', err)
       const message = err?.data?.message ?? err?.message ?? 'Failed to update branch status'
       // Replace alert with your app's toast/notification if available
-      alert(message)
+      notifyError(dispatch, 'Branch Status', message)
+    
     }
   }
 

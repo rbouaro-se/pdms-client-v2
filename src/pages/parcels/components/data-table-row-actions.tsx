@@ -24,6 +24,8 @@ import {
 import { toast } from 'sonner'
 import { ParcelStatus } from '@/types/parcel'
 import { API } from '@/api'
+import { notifyError, notifySuccess } from '@/components/custom/notify'
+import { useDispatch } from 'react-redux'
 
 interface DataTableRowActionsProps<Parcel> {
   row: Row<Parcel>
@@ -41,9 +43,9 @@ export function DataTableRowActions<Parcel>({
   row,
 }: DataTableRowActionsProps<Parcel>) {
   const parcel = parcelSchema.parse(row.original)
-
+const dispatch = useDispatch()
   // API mutations
-  const [downloadReceipt] = useDownloadParcelReceiptMutation()
+  const [downloadReceipt, {isLoading: isDownloading}] = useDownloadParcelReceiptMutation()
   const [changeStatus] = useChangeParcelStatusMutation()
   const [softDelete] = useSoftDeleteParcelMutation()
 
@@ -58,9 +60,12 @@ export function DataTableRowActions<Parcel>({
       link.click()
       link.remove()
       toast.success('Receipt downloaded successfully')
+      notifySuccess(dispatch, 'Receipt download', `Receipt ${isDownloading ? 'downloading...' : 'downloaded'}`)
     } catch (error) {
       toast.error('Failed to download receipt')
       console.error('Receipt download failed:', error)
+      const err = error as Error
+      notifyError(dispatch, 'Receipt download', `Receipt download failed: ${err.message}`)
     }
   }
 
@@ -73,10 +78,11 @@ export function DataTableRowActions<Parcel>({
 
       API.util.invalidateTags(['Parcel']);
 
-      toast.success(`Status changed to ${DeliveryStatuses.find(s => s.value === newStatus)?.label}`)
+      notifySuccess(dispatch, 'Parcel Delivery', `Status changed to ${DeliveryStatuses.find(s => s.value === newStatus)?.label}`)
     } catch (error) {
-      toast.error('Failed to update status')
       console.error('Status update failed:', error)
+      const err = error as Error
+      notifyError(dispatch, 'Parcel Delivery', `Status update failed: ${err.message}`)
     }
   }
 
@@ -85,10 +91,11 @@ export function DataTableRowActions<Parcel>({
       await softDelete(parcel.parcelId).unwrap()
       // Invalidate the parcels cache to trigger a refetch
       API.util.invalidateTags(['Parcel'])
-      toast.success('Parcel deleted successfully')
+      notifySuccess(dispatch, 'Delete Parcel', `Parcel deleted successfully`)
     } catch (error) {
-      toast.error('Failed to delete parcel')
       console.error('Delete failed:', error)
+      const err = error as Error
+      notifyError(dispatch, 'Delete Parcel', `Status update failed: ${err.message}`)
     }
   }
 

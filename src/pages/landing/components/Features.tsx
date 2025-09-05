@@ -23,13 +23,13 @@ const testimonies: TestimonyProps[] = [
     image: image1,
   },
   {
-    name: "Ama S.",
+    name: "Yaw B.",
     message:
       "I love the real-time tracking. I always know where my parcel is. Highly recommended for business deliveries!",
     image: image2,
   },
   {
-    name: "Yaw B.",
+    name: "Ama S.",
     message:
       "Affordable rates and professional drivers. My fragile items arrived safely. Will use again!",
     image: image3,

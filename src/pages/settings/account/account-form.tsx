@@ -11,9 +11,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+// import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+// import { Separator } from '@/components/ui/separator';
 import { PasswordInput } from '@/components/password-input';
 import { AppUser } from '@/types/user';
 import { useChangePasswordMutation } from '@/api/slices/auth';
@@ -37,27 +37,27 @@ const passwordChangeSchema = z.object({
 });
 
 // Email preferences schema
-const emailPreferencesSchema = z.object({
-  marketingEmails: z.boolean(),
-  securityAlerts: z.boolean(),
-  orderUpdates: z.boolean(),
-  newsletter: z.boolean(),
-}).refine(
-  (data) => data.marketingEmails || data.securityAlerts || data.orderUpdates || data.newsletter,
-  {
-    message: 'At least one email preference must be selected',
-    path: ['marketingEmails'],
-  }
-);
+// const emailPreferencesSchema = z.object({
+//   marketingEmails: z.boolean(),
+//   securityAlerts: z.boolean(),
+//   orderUpdates: z.boolean(),
+//   newsletter: z.boolean(),
+// }).refine(
+//   (data) => data.marketingEmails || data.securityAlerts || data.orderUpdates || data.newsletter,
+//   {
+//     message: 'At least one email preference must be selected',
+//     path: ['marketingEmails'],
+//   }
+// );
 
-// Two-factor authentication schema
-const twoFactorSchema = z.object({
-  enable2FA: z.boolean(),
-});
+// // Two-factor authentication schema
+// const twoFactorSchema = z.object({
+//   enable2FA: z.boolean(),
+// });
 
 type PasswordChangeValues = z.infer<typeof passwordChangeSchema>;
-type EmailPreferencesValues = z.infer<typeof emailPreferencesSchema>;
-type TwoFactorValues = z.infer<typeof twoFactorSchema>;
+// type EmailPreferencesValues = z.infer<typeof emailPreferencesSchema>;
+// type TwoFactorValues = z.infer<typeof twoFactorSchema>;
 
 interface AccountManagementFormProps {
   user: AppUser | null;
@@ -76,22 +76,22 @@ export function AccountManagementForm({ user }: AccountManagementFormProps) {
     },
   });
 
-  const emailForm = useForm<EmailPreferencesValues>({
-    resolver: zodResolver(emailPreferencesSchema),
-    defaultValues: {
-      marketingEmails: false,
-      securityAlerts: true,
-      orderUpdates: true,
-      newsletter: false,
-    },
-  });
+  // const emailForm = useForm<EmailPreferencesValues>({
+  //   resolver: zodResolver(emailPreferencesSchema),
+  //   defaultValues: {
+  //     marketingEmails: false,
+  //     securityAlerts: true,
+  //     orderUpdates: true,
+  //     newsletter: false,
+  //   },
+  // });
 
-  const twoFactorForm = useForm<TwoFactorValues>({
-    resolver: zodResolver(twoFactorSchema),
-    defaultValues: {
-      enable2FA: false,
-    },
-  });
+  // const twoFactorForm = useForm<TwoFactorValues>({
+  //   resolver: zodResolver(twoFactorSchema),
+  //   defaultValues: {
+  //     enable2FA: false,
+  //   },
+  // });
 
   const onPasswordSubmit = async (data: PasswordChangeValues) => {
     try {
@@ -110,19 +110,13 @@ export function AccountManagementForm({ user }: AccountManagementFormProps) {
     }
   };
 
-  const onEmailPreferencesSubmit = (_data: EmailPreferencesValues) => {
-    // showSubmittedData(
-    //   { ...data, userId: user?.id },
-    //   'Email preferences updated successfully!'
-    // );
-  };
+  // const onEmailPreferencesSubmit = (_data: EmailPreferencesValues) => {
 
-  const onTwoFactorSubmit = (_data: TwoFactorValues) => {
-    // showSubmittedData(
-    //   data,
-    //   data.enable2FA ? 'Two-factor authentication enabled!' : 'Two-factor authentication disabled!'
-    // );
-  };
+  // };
+
+  // const onTwoFactorSubmit = (_data: TwoFactorValues) => {
+  
+  // };
 
   // For customers without an email, show a message
   if (user && user.type === 'customer' && !user.email) {
@@ -230,7 +224,7 @@ export function AccountManagementForm({ user }: AccountManagementFormProps) {
       )}
 
       {/* Email Preferences Section (both SystemUser and Customer) */}
-      {user && user.type === 'system' && <Separator />}
+      {/* {user && user.type === 'system' && <Separator />}
       <Card>
         <CardHeader>
           <CardTitle>Email Preferences</CardTitle>
@@ -341,10 +335,10 @@ export function AccountManagementForm({ user }: AccountManagementFormProps) {
             </form>
           </Form>
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* Two-Factor Authentication Section (SystemUser only) */}
-      {user && user.type === 'system' && (
+      {/* {user && user.type === 'system' && (
         <>
           <Separator />
           <Card>
@@ -395,7 +389,7 @@ export function AccountManagementForm({ user }: AccountManagementFormProps) {
             </CardContent>
           </Card>
         </>
-      )}
+      )} */}
     </div>
   );
 }
