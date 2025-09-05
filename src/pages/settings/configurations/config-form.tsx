@@ -259,7 +259,7 @@ export function PaDeliveryConfigurationForm() {
                 name="maxInsuranceValue"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Max Insurance Value ($)</FormLabel>
+                    <FormLabel>Max Insurance Value (GHc)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -311,7 +311,7 @@ export function PaDeliveryConfigurationForm() {
                   name="flatDeliveryCost"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Flat Delivery Cost ($)</FormLabel>
+                      <FormLabel>Flat Delivery Cost (GHc)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -331,7 +331,7 @@ export function PaDeliveryConfigurationForm() {
                     name="deliveryBaseCost"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Base Delivery Cost ($)</FormLabel>
+                        <FormLabel>Base Delivery Cost (GHc)</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -350,7 +350,7 @@ export function PaDeliveryConfigurationForm() {
                     name="deliveryCostPerKg"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Cost per Kg ($)</FormLabel>
+                        <FormLabel>Cost per Kg (GHc)</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -368,7 +368,7 @@ export function PaDeliveryConfigurationForm() {
                     name="ratePerDeliveryDistanceKm"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Rate per Km ($)</FormLabel>
+                        <FormLabel>Rate per Km (GHc)</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -441,7 +441,7 @@ export function PaDeliveryConfigurationForm() {
                 name="flatParcelTypeFee"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Flat Parcel Type Fee ($)</FormLabel>
+                    <FormLabel>Flat Parcel Type Fee (GHc)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -462,7 +462,7 @@ export function PaDeliveryConfigurationForm() {
                   name="documentParcelTypeSurcharge"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Documents ($)</FormLabel>
+                      <FormLabel>Documents (GHc)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -480,7 +480,7 @@ export function PaDeliveryConfigurationForm() {
                   name="fragileParcelTypeSurcharge"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Fragile Items ($)</FormLabel>
+                      <FormLabel>Fragile Items (GHc)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -498,7 +498,7 @@ export function PaDeliveryConfigurationForm() {
                   name="oversizeParcelTypeSurcharge"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Oversize Items ($)</FormLabel>
+                      <FormLabel>Oversize Items (GHc)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -516,7 +516,7 @@ export function PaDeliveryConfigurationForm() {
                   name="perishableParcelTypeSurcharge"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Perishable Goods ($)</FormLabel>
+                      <FormLabel>Perishable Goods (GHc)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -534,7 +534,7 @@ export function PaDeliveryConfigurationForm() {
                   name="electronicsParcelTypeSurcharge"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Electronics ($)</FormLabel>
+                      <FormLabel>Electronics (GHc)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -552,7 +552,7 @@ export function PaDeliveryConfigurationForm() {
                   name="clothingParcelTypeSurcharge"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Clothing ($)</FormLabel>
+                      <FormLabel>Clothing (GHc)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -570,7 +570,7 @@ export function PaDeliveryConfigurationForm() {
                   name="furnitureParcelTypeSurcharge"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Furniture ($)</FormLabel>
+                      <FormLabel>Furniture (GHc)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -588,7 +588,7 @@ export function PaDeliveryConfigurationForm() {
                   name="otherParcelTypeSurcharge"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Other Items ($)</FormLabel>
+                      <FormLabel>Other Items (GHc)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -640,7 +640,7 @@ export function PaDeliveryConfigurationForm() {
                 name="flatDeliveryTypeFee"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Flat Delivery Type Fee ($)</FormLabel>
+                    <FormLabel>Flat Delivery Type Fee (GHc)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
