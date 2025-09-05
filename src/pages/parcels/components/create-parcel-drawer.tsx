@@ -26,6 +26,9 @@ import { useGetAllDispatchersQuery } from '@/api/slices/dispatcherApiSlice'
 import { useGetAllBranchesQuery } from '@/api/slices/branchApiSlice'
 import { formatPhoneInput, validateGhanaianPhoneNumber } from '@/utils'
 import { useEffect } from 'react'
+import ButtonLoading from '@/components/custom/buttonLoading'
+import { notifyError, notifySuccess } from '@/components/custom/notify'
+import { useDispatch } from 'react-redux'
 
 
 // Zod schema for validation
@@ -58,7 +61,7 @@ const formSchema = z.object({
   originBranchId: z.string().min(1, 'Origin branch is required'),
   destinationBranchId: z.string().min(1, 'Destination branch is required'),
   dispatcherId: z.string().min(1, 'Dispatcher is required'),
-  parcelType: z.enum(['DOCUMENT', 'PACKAGE', 'FRAGILE', 'PERISHABLE']),
+  parcelType: z.enum(['DOCUMENT', 'FRAGILE', 'OVERSIZED', 'PERISHABLE', 'ELECTRONICS', 'CLOTHING', 'FURNITURE', 'OTHER']),
   contentDescription: z.string().min(1, 'Description is required'),
   insuranceValue: z.number().min(0, 'Insurance value cannot be negative'),
   notes: z.string().optional(),
@@ -77,7 +80,7 @@ interface Props {
 
 
 export function CreateParcelDrawer({ open, onOpenChange }: Props) {
-  const [createParcel] = useCreateParcelMutation()
+  const [createParcel, {isLoading}] = useCreateParcelMutation()
   const { data: dispatchers } = useGetAllDispatchersQuery({
     pageNumber: 0,
     pageSize: 100,
@@ -87,6 +90,8 @@ export function CreateParcelDrawer({ open, onOpenChange }: Props) {
     page: 0,
     size: 100,
   });
+
+  const dispatch = useDispatch();
 
   const form = useForm<ParcelForm>({
     resolver: zodResolver(formSchema),
@@ -142,10 +147,14 @@ export function CreateParcelDrawer({ open, onOpenChange }: Props) {
         recipientPhoneNumber: data.recipientPhoneNumber.replace(/\D/g, ''),
       };
       await createParcel(payload).unwrap()
+
       onOpenChange(false)
+      notifySuccess(dispatch, 'Create Parcel', 'Parcel registered successfully')
       form.reset()
     } catch (error) {
+      const err = error as Error
       console.error('Failed to create parcel:', error)
+      notifyError(dispatch, 'Create Parcel', err.message)
     }
   }
 
@@ -254,9 +263,13 @@ export function CreateParcelDrawer({ open, onOpenChange }: Props) {
                       placeholder="Select parcel type"
                       items={[
                         { label: 'Document', value: 'DOCUMENT' },
-                        { label: 'Package', value: 'PACKAGE' },
                         { label: 'Fragile', value: 'FRAGILE' },
+                        { label: 'Oversized', value: 'OVERSIZED' },
                         { label: 'Perishable', value: 'PERISHABLE' },
+                        { label: 'Electronics', value: 'ELECTRONICS' },
+                        { label: 'Clothing', value: 'CLOTHING' },
+                        { label: 'Furniture', value: 'FURNITURE' },
+                        { label: 'Other', value: 'OTHER' }
                       ]}
                     />
                     <FormMessage />
@@ -490,9 +503,13 @@ export function CreateParcelDrawer({ open, onOpenChange }: Props) {
           <SheetClose asChild>
             <Button variant="outline">Cancel</Button>
           </SheetClose>
-          <Button form="parcel-form" type="submit">
-            Create Parcel
-          </Button>
+          {isLoading ?
+            <ButtonLoading  />
+            : <Button form="parcel-form" type="submit">
+              Create Parcel
+            </Button>
+        }
+          
         </SheetFooter>
       </SheetContent>
     </Sheet>

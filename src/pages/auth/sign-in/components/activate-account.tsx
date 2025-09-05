@@ -75,8 +75,6 @@ export default function ActivateAccount({ className, ...props }: ActivateAccount
         confirmPassword: data.confirmPassword
       })
 
-      console.log(response)
-
       if (!response.error) {
         notifySuccess(dispatch, 'Account Activated', 'Your account has been successfully activated. You can now login with your new password.')
         dispatch(clearUser())

@@ -29,6 +29,9 @@ import {
   useCreateBranchMutation,
   useUpdateBranchMutation,
 } from '@/api/slices/branchApiSlice'
+import { notifyError, notifySuccess } from '@/components/custom/notify'
+import { useDispatch } from 'react-redux'
+import ButtonLoading from '@/components/custom/buttonLoading'
 
 // Zod schema based on CreateBranchRequest
 const locationSchema = z.object({
@@ -74,6 +77,8 @@ export function BranchActionDialog({ currentRow, open, onOpenChange }: Props) {
 
   const [createBranch, { isLoading: isCreating }] = useCreateBranchMutation()
   const [updateBranch, { isLoading: isUpdating }] = useUpdateBranchMutation()
+
+  const dispatch = useDispatch();
 
   const form = useForm<BranchForm>({
     resolver: zodResolver(formSchema),
@@ -162,9 +167,11 @@ export function BranchActionDialog({ currentRow, open, onOpenChange }: Props) {
 
         const resp = await updateBranch({ branchId: String(branchId), payload }).unwrap()
         // optional: show response for debugging / confirmation
+        notifySuccess(dispatch, 'Branch Update', 'Branch updated successfully')
         showSubmittedData(resp)
       } else {
         const resp = await createBranch(payload as any).unwrap()
+        notifyError(dispatch, 'Branch Created', 'Branch Created successfully')
         showSubmittedData(resp)
       }
 
@@ -177,7 +184,7 @@ export function BranchActionDialog({ currentRow, open, onOpenChange }: Props) {
       const message =
         err?.data?.message ?? err?.message ?? 'Failed to save branch. Please try again.'
       // keep it simple: use alert here, replace with toast in your app
-      alert(message)
+      notifyError(dispatch, 'Branch Created', message)
     }
   }
 
@@ -315,9 +322,14 @@ export function BranchActionDialog({ currentRow, open, onOpenChange }: Props) {
           </Form>
         </div>
         <DialogFooter>
-          <Button type="submit" form="branch-form" disabled={isCreating || isUpdating}>
-            {isEdit ? (isUpdating ? 'Updating…' : 'Update Branch') : isCreating ? 'Creating…' : 'Create Branch'}
+          {
+            isCreating || isUpdating ? 
+              <ButtonLoading />
+              :<Button type="submit" form="branch-form" disabled={isCreating || isUpdating}>
+            {isEdit ? 'Update Branch':  'Create Branch' }
           </Button>
+          }
+          
         </DialogFooter>
       </DialogContent>
     </Dialog>
