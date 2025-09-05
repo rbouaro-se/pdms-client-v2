@@ -17,6 +17,7 @@ import {
   InputOTPSeparator,
 } from '@/components/ui/input-otp'
 import { ArrowLeft } from 'lucide-react'
+import ButtonLoading from '@/components/custom/buttonLoading'
 
 interface OtpFormProps {
   title: string
@@ -28,6 +29,7 @@ interface OtpFormProps {
   resendButtonText?: string
   returnButtonText?: string
   onReturn: () => Promise<void>
+  isLoading?: boolean
 }
 
 const formSchema = z.object({
@@ -45,7 +47,8 @@ export function OtpForm({
   submitButtonText = 'Verify',
   resendButtonText = 'Resend a new code',
   returnButtonText,
-  onReturn
+  onReturn,
+  isLoading
 }: OtpFormProps) {
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -133,8 +136,11 @@ export function OtpForm({
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            <Button
+        />
+        
+        {isLoading
+          ? <ButtonLoading />
+        :<Button
               className='mt-2'
               type='submit'
               disabled={otp.length < 6 || isSubmitting}
@@ -142,6 +148,9 @@ export function OtpForm({
             >
               {submitButtonText}
             </Button>
+        
+        }
+            
       </form>
       <p className='text-muted-foreground px-8 text-center text-sm'>
         Haven't received it?{' '}

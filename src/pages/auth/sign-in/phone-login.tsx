@@ -2,7 +2,7 @@ import { HTMLAttributes, useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -22,7 +22,6 @@ import { OtpForm } from '../otp/components/otp-form'
 import { Customer } from '@/types/user'
 import { IAPIError, IResponse } from '@/types'
 import { setUser } from '@/redux/slices/auth'
-import { setFeedback } from '@/redux/slices/notification'
 import {
   Card,
   CardContent,
@@ -32,6 +31,8 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import AuthLayout from '../auth-layout'
+import { notifyError, notifySuccess } from '@/components/custom/notify'
+import ButtonLoading from '@/components/custom/buttonLoading'
 
 type UserAuthFormProps = HTMLAttributes<HTMLFormElement>
 
@@ -44,13 +45,13 @@ const formSchema = z.object({
 })
 
 const PhoneLogin = ({ className, ...props }: UserAuthFormProps) => {
-  const [isLoading, setIsLoading] = useState(false)
+
   const [searchParams] = useSearchParams();
   const phoneFromParams = searchParams.get('phone') || '';
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
+  const location = useLocation()
   // Initialize step based on URL parameter
   const [step, setStep] = useState<"STEP-1" | "STEP-2">(
     searchParams.get('step') === 'verify' ? "STEP-2" : "STEP-1"
@@ -60,8 +61,8 @@ const PhoneLogin = ({ className, ...props }: UserAuthFormProps) => {
 
   const [phone, setPhone] = useState<string>(phoneFromParams || account.username || '');
 
-  const [initiatePhoneLogin] = useInitiatePhoneLoginMutation();
-  const [phoneLogin] = usePhoneLoginMutation();
+  const [initiatePhoneLogin, { isLoading: isInitiatePhoneLoginLoading }] = useInitiatePhoneLoginMutation();
+  const [phoneLogin, { isLoading: isPhoneLoginLoading }] = usePhoneLoginMutation();
   const [logout] = useLogoutMutation();
 
   React.useEffect(() => {
@@ -105,7 +106,7 @@ const PhoneLogin = ({ className, ...props }: UserAuthFormProps) => {
     form.setValue('phone', formattedValue, { shouldValidate: true });
     setPhone(formattedValue);
   };
-
+  const from = location.state?.from?.pathname || '/pages/customer';
   const handleSubmit = async (code: string) => {
     try {
 
@@ -114,22 +115,19 @@ const PhoneLogin = ({ className, ...props }: UserAuthFormProps) => {
 
       if (response.data) {
         dispatch(setUser({ ...response.data, type: "customer" }));
-        navigate('', { replace: true });
-        navigate('/pages/customer/home', { replace: true });
+        notifySuccess(dispatch, 'Phone Login', 'Phone login successful for ' + response.data.phoneNumber)
+        navigate(from, { replace: true });
       }
 
       if (response.error) {
         const errorResponse = response.error as IAPIError;
-        dispatch(setFeedback({
-          message: `Authentication failed! ${errorResponse.data.message || 'Unknown error'}`,
-          title: "Authentication",
-          color: "danger"
-        }))
+        notifyError(dispatch, 'Phone Login', `Authentication failed! ${errorResponse.data.message || 'Unknown error'}`)
       }
 
     } catch (error) {
       console.error('Verification failed:', error);
-      // Handle error (show message to user)
+      const err = error as Error;
+      notifyError(dispatch, 'Phone Login', `Authentication failed! ${err.message || 'Unknown error'}`)
     }
   };
 
@@ -139,15 +137,12 @@ const PhoneLogin = ({ className, ...props }: UserAuthFormProps) => {
         .unwrap()
         .then(res => {
           console.log('Phone login initiated:', res);
-          dispatch(setFeedback({
-            message: `Otp resent to ${formatGhanaianPhoneNumber(phone)}`,
-            title: "Otp Verification",
-            color: "success"
-          }))
+          notifySuccess(dispatch, 'Phone Login', res.message)
         })
         .catch((error) => {
           console.error('Error initiating phone login:', error);
-          // Handle error (show message to user)
+          const err = error as Error;
+          notifyError(dispatch, 'Phone Login', `Error send otp! ${err.message || 'Unknown error'}`)
         });
     } catch (error) {
       console.error('Resend failed:', error);
@@ -165,7 +160,6 @@ const PhoneLogin = ({ className, ...props }: UserAuthFormProps) => {
   };
 
   async function handleContinue(data: z.infer<typeof formSchema>) {
-    setIsLoading(true);
     try {
       const validation = validateGhanaianPhoneNumber(data.phone);
       if (!validation.isValid) {
@@ -175,14 +169,15 @@ const PhoneLogin = ({ className, ...props }: UserAuthFormProps) => {
 
       const result = await initiatePhoneLogin({ phoneNumber: data.phone }).unwrap();
       console.log('Phone login initiated:', result);
+      notifySuccess(dispatch, 'Phone Login', result.message)
       setStep("STEP-2");
     } catch (error) {
       console.error('Error initiating phone login:', error);
       form.setError('phone', {
         message: 'Failed to initiate login. Please try again.'
       });
-    } finally {
-      setIsLoading(false);
+      const err = error as Error;
+      notifyError(dispatch, 'Phone Login', `Error initiating phone login! ${err.message || 'Unknown error'}`)
     }
   }
 
@@ -233,9 +228,12 @@ const PhoneLogin = ({ className, ...props }: UserAuthFormProps) => {
                   )}
                 />
 
-                <Button className='mt-2' disabled={isLoading} type='submit'>
-                  Continue
-                </Button>
+                {
+                  isInitiatePhoneLoginLoading ? <ButtonLoading /> :
+                    <Button className='mt-2' disabled={isInitiatePhoneLoginLoading} type='submit'>
+                      Continue
+                    </Button>
+                }
 
                 <div className='relative my-2'>
                   <div className='absolute inset-0 flex items-center'>
@@ -269,7 +267,8 @@ const PhoneLogin = ({ className, ...props }: UserAuthFormProps) => {
               onReturn={handlReturn}
               returnButtonText="Enter a different phone number"
               submitButtonText="Verify Code"
-              resendButtonText="Send new code"
+                resendButtonText="Send new code"
+                isLoading={isPhoneLoginLoading}
             />
           )}
 

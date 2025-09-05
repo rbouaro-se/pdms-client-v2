@@ -148,7 +148,7 @@ export const Navbar = () => {
 
           <div className="hidden md:flex gap-2">
             <a
-              href="/authentication/login"
+              href="/authentication/phone-login"
               className={`border ${buttonVariants({ variant: "secondary" })}`}
             >
               <Package className="mr-2 w-5 h-5" />
